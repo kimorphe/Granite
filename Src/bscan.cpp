@@ -22,6 +22,7 @@ class Wv2D{
 		double **amp;
 		complex<double> **Amp;
 		double **phi;
+		double **cp;
 		void Gauss(double tb, double sig);
 		void FFT_all();
 		void write_Amp(int i, char fname[128]);
@@ -32,6 +33,8 @@ class Wv2D{
 		Wv2D();
 		void dcnv_all();
 		void unwrap(double f0);
+		double ht;
+		void PhaseVel(double h);
 	private:
 	protected:
 };
@@ -93,6 +96,11 @@ void Wv2D::load(char M[3]){
 	phi=(double **)malloc(sizeof(double*)*nfile);
 	pt=(double *)malloc(sizeof(double)*nfile*Np);
 	for(i=0;i<nfile;i++) phi[i]=pt+Np*i;
+
+	int Np2=Np/2;
+	cp=(double **)malloc(sizeof(double*)*nfile);
+	pt=(double *)malloc(sizeof(double)*nfile*(Np2));
+	for(i=0;i<nfile;i++) cp[i]=pt+Np2*i;
 
 	Amp=(complex<double> **)malloc(sizeof(complex<double>*)*nfile);
 	zpt=(complex<double> *)malloc(sizeof(complex<double>)*nfile*Np);
@@ -184,7 +192,23 @@ void Wv2D::unwrap(double f0){
 		awv.unwrap(f0);
 	}
 };
-
+void Wv2D::PhaseVel(double h){
+	ht=h;
+	int i,j,Np2=Np/2;
+	double PI2=8.0*atan(1.0);
+	double freq,omg;
+	
+	for(i=0;i<nfile;i++){
+	for(j=0;j<Np2;j++){
+		freq=df*j;
+		omg=freq*PI2;
+		cp[i][j]=omg*ht/phi[i][j];
+//		fprintf(fp,"%lf, %lf\n",freq,cp);
+	}
+	}
+	
+};
+//-----------------------------------------------------------------
 int main(){
 
 	Wv2D bwv;
@@ -192,50 +216,92 @@ int main(){
 	char fnref[128]="../1MHznew.csv";
 	char M[3]; 
 
-	sprintf(M,"%s","K");
+	sprintf(M,"%s","Qt");	// chose mineral type
 	sprintf(M,"%s","Na");
-	sprintf(M,"%s","Qt");
+	sprintf(M,"%s","K");
 
-	bwv.load(M);
-	tb=11.8, sig=0.5;
-	bwv.set_refwv(fnref,tb,sig);
-	bwv.dcnv_all();
+	bwv.load(M);			// Load waveform data (B-scan)
+	tb=11.8, sig=0.5;		// Gaussian window parameter
+	bwv.set_refwv(fnref,tb,sig);	// load reference data and apply Gaussian window
+//	bwv.dcnv_all();
 
-	char fout[128]="awv.dat";
-	bwv.write_amp(33,fout);
+//	char fout[128]="awv.dat";
+//	bwv.write_amp(33,fout);
 
 	tb=12.5, sig=0.5;
-	bwv.Gauss(tb,sig);
-	sprintf(fout,"awv_win.dat");
-	bwv.write_amp(33,fout);
+	bwv.Gauss(tb,sig);		// Apply Guassian window
+//	sprintf(fout,"awv_win.dat");
+//	bwv.write_amp(33,fout);
 
-	bwv.FFT_all();
-	bwv.dcnv_all();
-	bwv.unwrap(0.5);
-	sprintf(fout,"awv.fft");
-	bwv.write_Amp_polar(33,fout);
+	bwv.FFT_all();	// Peform FFT 
+	bwv.dcnv_all();	// Deconvolution
+	double f0=0.5;	// [MHz]
+	bwv.unwrap(0.5);	// Unwrap phase spectrum from f0 [MHz] 
+//	sprintf(fout,"awv.fft");
+//	bwv.write_Amp_polar(33,fout);
 
 	int i,j;
 	double omg,freq;
-	double ht=3.42,cp;
+	double ht=3.42;	// sample thicnkess [mm]
+		bwv.PhaseVel(ht);
+	double cp;
 	double PI=4.0*atan(1.0);
-
-	freq=1.0;
-	j=int(freq/bwv.df);
-	omg=bwv.df*j*2.*PI;
-
+	double f1=0.5;	// [MHz]
+	double f2=1.5;	// [MHz]
+	int j1=int(f1/bwv.df);
+	int j2=int(f2/bwv.df);
+	FILE *fp=fopen("cp.dat","w");
+	fprintf(fp,"#f1, f2, nf\n");
+	f1=bwv.df*j1;
+	f2=bwv.df*j2;
+	fprintf(fp,"%lf, %lf, %d\n",f1,f2,j2-j1+1);
+	fprintf(fp,"#number of waveforms\n");
+	fprintf(fp,"%d\n",bwv.nfile);
+	fprintf(fp,"# cp(w)[km/s] as a function of frequency\n");
 	for(i=0;i<bwv.nfile;i++){
-		cp=omg*ht/bwv.phi[i][j];
-		printf("%d %lf\n",i,cp);
-	};
-	printf("\n");
+	for(j=j1;j<=j2;j++){
+		freq=bwv.df*j;
+		omg=freq*2.*PI;
+		fprintf(fp,"%lf, %lf\n",freq,bwv.cp[i][j]);
+	}
+	}
 
-	freq=1.2;
-	j=int(freq/bwv.df);
-	omg=bwv.df*j*2.*PI;
-	for(i=0;i<bwv.nfile;i++){
-		cp=omg*ht/bwv.phi[i][j];
-		printf("%d %lf\n",i,cp);
-	};
+
+	// Histogram
+	double cp1=3.0;
+	double cp2=10.0;
+	int nbin=30;
+	int *hist=(int *)malloc(sizeof(int)*nbin);
+
+
+	double dcp=(cp2-cp1)/nbin;
+	int kbin;
+	double x;
+
+	double ave;
+	int nsmp;
+	for(int l=0;l<10;l++){
+		freq=0.6+0.1*l;
+		j=int(freq/bwv.df);
+		for(i=0;i<nbin;i++) hist[i]=0;
+
+		ave=0.0;
+		nsmp=0;
+		for(i=0; i<bwv.nfile; i++){
+			kbin=int((bwv.cp[i][j]-cp1)/dcp);
+			if(kbin<0) continue;
+			if(kbin>=nbin) continue;
+			ave+=bwv.cp[i][j];
+			nsmp++;
+			hist[kbin]++;
+		};
+		printf("#ave=%lf\n",ave/nsmp);
+
+		for(i=0;i<nbin;i++){
+			x=cp1+(i-0.5)*dcp;	
+			printf("%lf, %d\n",x,hist[i]);
+		}
+		printf("\n");
+	}
 
 };

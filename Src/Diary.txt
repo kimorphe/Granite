@@ -1,0 +1,26 @@
+2021/04/06(Tue.)
+
+ascan.cpp (+ fft.cpp, wave1d.cpp, waves.h)
+	A-scope波形に対する種々の操作
+	新たにSigmoid関数による波形切り出し操作を追加
+
+	動作確認: reference signalと透過波データが必要
+	出力ファイル
+
+		ref0.out(参照波形)
+		ref1.out(参照波形×Window) 
+	
+		wv0.out(透過波形)
+		wv1.out(透過波形×Window）
+		wv1.fft(FFTスペクトル：極座標)
+
+		cp.dat（位相速度）
+mw.py
+	Fractional Voigtモデルによるslowness sp(w)のフィッティング
+	s0は線形最小二乗法で決定。
+	betaは囲い込み後に解を黄金分割法で精度改善
+	実行にはascan.cppからの出力cp.datが必要(slownessのデータを指定した周波数範囲で利用)
+	周波数の刻みcp.datに合わせられる
+
+bscan.cpp
+

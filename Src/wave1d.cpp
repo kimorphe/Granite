@@ -218,9 +218,17 @@ void Wv1D::out_amp(char *fn,char dlm){
 
 	fclose(fp);
 };
+void Wv1D::Sigmoid(double tb, double t90){
+	double a=log(0.9/(1.-0.9))/t90;
+	double Wt,tt;
+	for(int i=0;i<Nt;i++){
+		tt=time[i]-tb;
+		Wt=1./(1.+exp(-a*tt));
+		amp[i]*=Wt;
+	}
+};
 void Wv1D::Gauss(double tb, double sig){
 	double arg;
-
 	int i;
 	for(i=0;i<Nt;i++){
 		arg=time[i]-tb;
@@ -332,6 +340,17 @@ Wv1D corr(Wv1D wv1, Wv1D wv2, double *tmax, double *Amax){
 	(*Amax)=A0;
 	//printf("%d %le %le\n",imax,t0,A0);
 	return(wv3);
+};
+int Wv1D::get_fnum(double ff){
+	if(ff<0.0) return(0);
+	int nf=int(ff/df+0.5);
+	if(nf>=Np) return(Np-1);
+	return(nf);
+};
+double Wv1D::get_f(int i){
+	if(i<0) return(0.0);
+	if(i>=Np) i=Np-1;
+	return(i*df);
 };
 //---------------------------------------------------------
 #if DB == 11 

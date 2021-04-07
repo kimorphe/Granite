@@ -1,6 +1,7 @@
 git add Src/*.cpp
 git add Src/*.h
 git add Src/makefile
+git add Src/Diary.txt
 
 git add Src/SOM/*.cpp
 git add Src/SOM/*.h

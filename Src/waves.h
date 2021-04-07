@@ -38,7 +38,10 @@ class Wv1D{
 		double max(double t1,double t2);
 		void Butterworth(double tb, double Tw_6dB);
 		void Gauss(double tb, double sig);
+		void Sigmoid(double tb, double t90);
 		double gdelay();
+		int get_fnum(double ff);
+		double get_f(int n);
 	private:
 	protected:
 };

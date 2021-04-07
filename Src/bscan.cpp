@@ -5,6 +5,79 @@
 
 using namespace std;
 
+
+class Hist2D{
+	public:
+		int **Ht;
+		double range[2];
+		int nbin;
+		int ndat[2];
+		int axis;
+		void init(int dsize[2], int ax, int nb);
+		void gen(double **data, double y1, double y2);
+		int Nx,Ny;
+	private:
+	protected:
+};
+
+void Hist2D::init(int dsize[2], int ax, int nb){
+	axis=ax;
+	nbin=nb;
+	ndat[0]=dsize[0];
+	ndat[1]=dsize[1];
+
+	if(axis==0){
+		Nx=nbin;
+		Ny=ndat[1];
+	}
+	if(axis==1){
+		Nx=ndat[0];
+		Ny=nbin;
+	}
+
+	Ht=(int **)malloc(sizeof(int *)*Nx);
+	int *pt=(int *)malloc(sizeof(int)*Nx*Ny);
+	for(int i=0;i<Nx;i++) Ht[i]=pt+i*Ny;
+};
+
+void Hist2D::gen(double **data, double y1, double y2){
+	range[0]=y1;
+	range[1]=y2;
+	double dy=(y2-y1)/nbin;
+	int i,j;
+
+	for(i=0;i<Nx;i++){
+	for(j=0;j<Ny;j++){
+		Ht[i][j]=0;
+	}
+	}
+
+	int l,ibin,nsum;
+	if(axis==0){
+		for(j=0;j<Ny;j++){
+			nsum=0;
+		for(l=0;l<ndat[0];l++){
+			ibin=int((data[l][j]-y1)/dy);
+			if(ibin<0) continue;
+			if(ibin>=nbin) continue;
+			Ht[ibin][j]++;
+			nsum++;
+		}
+		}
+	};
+
+	if(axis==1){
+		for(i=0;i<Nx;i++){
+		for(l=0;l<ndat[1];l++){
+			ibin=int((data[i][l]-y1)/dy);
+			if(ibin<0) continue;
+			if(ibin>=nbin) continue;
+			Ht[i][ibin]++;
+		}
+		}
+	};
+};
+
 class Wv2D{
 	public:
 		int nfile;	// number of files
@@ -203,7 +276,6 @@ void Wv2D::PhaseVel(double h){
 		freq=df*j;
 		omg=freq*PI2;
 		cp[i][j]=omg*ht/phi[i][j];
-//		fprintf(fp,"%lf, %lf\n",freq,cp);
 	}
 	}
 	
@@ -216,9 +288,9 @@ int main(){
 	char fnref[128]="../1MHznew.csv";
 	char M[3]; 
 
-	sprintf(M,"%s","Qt");	// chose mineral type
 	sprintf(M,"%s","Na");
 	sprintf(M,"%s","K");
+	sprintf(M,"%s","Qt");	// chose mineral type
 
 	bwv.load(M);			// Load waveform data (B-scan)
 	tb=11.8, sig=0.5;		// Gaussian window parameter
@@ -262,46 +334,38 @@ int main(){
 	for(j=j1;j<=j2;j++){
 		freq=bwv.df*j;
 		omg=freq*2.*PI;
-		fprintf(fp,"%lf, %lf\n",freq,bwv.cp[i][j]);
+		//fprintf(fp,"%lf, %lf\n",freq,bwv.cp[i][j]);
+		fprintf(fp,"%lf\n",bwv.cp[i][j]);
 	}
 	}
 
 
 	// Histogram
+	Hist2D ht2;
 	double cp1=3.0;
-	double cp2=10.0;
+	double cp2=8.0;
 	int nbin=30;
-	int *hist=(int *)malloc(sizeof(int)*nbin);
-
-
 	double dcp=(cp2-cp1)/nbin;
-	int kbin;
+	int dsize[2];
+	dsize[0]=bwv.nfile;
+	dsize[1]=int(bwv.Np/2);
+	ht2.init(dsize,0,nbin);
+	ht2.gen(bwv.cp,cp1,cp2);
+
+
+	FILE *fh=fopen("cp.hist","w");
 	double x;
-
-	double ave;
-	int nsmp;
-	for(int l=0;l<10;l++){
-		freq=0.6+0.1*l;
-		j=int(freq/bwv.df);
-		for(i=0;i<nbin;i++) hist[i]=0;
-
-		ave=0.0;
-		nsmp=0;
-		for(i=0; i<bwv.nfile; i++){
-			kbin=int((bwv.cp[i][j]-cp1)/dcp);
-			if(kbin<0) continue;
-			if(kbin>=nbin) continue;
-			ave+=bwv.cp[i][j];
-			nsmp++;
-			hist[kbin]++;
-		};
-		printf("#ave=%lf\n",ave/nsmp);
-
-		for(i=0;i<nbin;i++){
-			x=cp1+(i-0.5)*dcp;	
-			printf("%lf, %d\n",x,hist[i]);
-		}
-		printf("\n");
+	fprintf(fh,"#f1, f2, nf\n");
+	fprintf(fh,"%lf, %lf, %d\n",f1,f2,j2-j1+1);
+	fprintf(fh,"#cp1, cp2, nbin\n");
+	fprintf(fh,"%lf, %lf, %d\n",cp1,cp2,nbin);
+	fprintf(fh,"# count\n");
+	for(j=j1;j<=j2;j++){
+	for(i=0;i<nbin;i++){
+		x=cp1+(i-0.5)*dcp;	
+		//fprintf(fh,"%lf %d\n",x, ht2.Ht[i][j]);
+		fprintf(fh,"%d\n",ht2.Ht[i][j]);
 	}
-
+	}
+	fclose(fh);
 };

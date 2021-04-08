@@ -22,5 +22,21 @@ mw.py
 	実行にはascan.cppからの出力cp.datが必要(slownessのデータを指定した周波数範囲で利用)
 	周波数の刻みcp.datに合わせられる
 
-bscan.cpp
+2021/04/06(Tue.)
+ascan.cpp
+	Voigt クラスを追加
+		Fractional Voigtモデルのcomplex modulusと大きさ、偏角、slownessを計算
+		メンバ変数に計測波形から求めたslownessを持つ
+		s_mdl(モデル),s_msd(実験)*s0がそれぞれslownessを表す。
+		両者の差を取ることでコストを計算。
+		コストをbetaについて最小化するメンバー関数を作成
+
+	-->　alph(exponent)は大抵1.0が最適(つまり普通のVoigt)
+	--> betaを最適化しても実験で得たスローネスの細かい変動は表現できない
+		（Voigtモデルはslownessが周波数に対して単調に変化する)
+
+	sp.datの内容は
+		frequency, slowness(measured), slowness(model), phase vel.(measured), phase vel.(model)
+		
+	
 

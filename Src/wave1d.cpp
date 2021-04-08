@@ -85,6 +85,7 @@ int Wv1D::load(char fname[128]){
 	t1=time[0];
 	t2=time[Nt-1];
 	dt=time[1]-time[0];
+	return(0);
 }
 int Wv1D::FFT(int isgn){
 	int p=ceil(log2(Nt));

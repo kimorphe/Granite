@@ -104,13 +104,21 @@ int Wv1D::FFT(int isgn){
 	fft_stat=isgn;
 
 	int i;
-	for(i=0;i<Np;i++) phi[i]=arg(Amp[i]); 
+	double PI2=8.0*atan(1.0);
+	for(i=0;i<Np;i++){
+	       	phi[i]=arg(Amp[i]); 
+		if(phi[i]<0.0) phi[i]=PI2+phi[i];
+	}
 	df=1./dt/Np;
 	return(Np);
 };
 void Wv1D::renew_phase(){
 	int i;
-	for(i=0;i<Np;i++) phi[i]=arg(Amp[i]);
+	double PI2=8.0*atan(1.0);
+	for(i=0;i<Np;i++){
+		phi[i]=arg(Amp[i]);
+		if(phi[i]<0.0) phi[i]=PI2+phi[i];
+	}
 };
 void Wv1D::unwrap(double f0){	// unwraping from f=f0
 	int i,nf=int(f0/df),nwrap;

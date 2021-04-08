@@ -1,3 +1,4 @@
+
 2021/04/06(Tue.)
 ascan.cpp (+ fft.cpp, wave1d.cpp, waves.h)
 	A-scope波形に対する種々の操作
@@ -20,6 +21,7 @@ mw.py
 	betaは囲い込み後に解を黄金分割法で精度改善
 	実行にはascan.cppからの出力cp.datが必要(slownessのデータを指定した周波数範囲で利用)
 	周波数の刻みcp.datに合わせられる
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 2021/04/07(Wed.)
 ascan.cpp
@@ -42,5 +44,25 @@ ascan.cpp
 ascan.cpp 不要部分を削除
 	出力ファイル cp.datは廃止（sp.datに指定した周波数範囲の位相速度等が書き出される)
 	sp.datの内容は
+	 Col 1     COL2                COL3             COL4                  COL5               COL6
 	frequency, slowness(measured), slowness(model), phase vel.(measured), phase vel.(model), Im(s)(model))
 		
+Pycodes/cp_hist.py
+	cp.hist(<-- bscan.cppの出力)
+	位相速度のヒスグラムをcolormap表示
+	** mw.py がGit管理下に置かれていなかった。see memo taken on th6 of April. 
+
+bscan.cpp, ascan.cpp
+	pythonで計算(stats.py + kw.py)で計算した位相速度と結果が合わない!
+
+	The range of np.angle() & arg(complex<double>) is both [-pi, pi].
+	--> modified to [0,2pi] by th=2pi+th ( when th<0). 
+
+	原因はWindowのかけ方かと思い調べているが現状では原因不明。
+	Sigmoid + ゆるいGaussianWindow +　tight なGaussian の組で窓をかけると、
+	右肩上がりの結果が全ての鉱物種について現れる。これは明らかに窓関数によるバイアス
+	で意味の無い結果と思われる。
+	--> Possible source of error is zero padding in FFT. 
+	    How python FFT works with data of non 2^p length has not been checked.
+	    Is simple zero padding is OK ?  Need to be cheked.
+

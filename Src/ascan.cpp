@@ -158,7 +158,7 @@ int main(){
 	Wv1D awv,arf;
 
 	char fnref[128]="../1MHznew.csv";	// Reference signal
-	char fname[128]="../Quartz/scope_223.csv"; // Transmitted waveform
+	char fname[128]="../Quartz/scope_432.csv"; // Transmitted waveform
 	//char fname[128]="../Na_Feldspar/scope_223.csv"; // Transmitted waveform
 	//char fname[128]="../K_Feldspar/scope_323.csv"; // Transmitted waveform
 
@@ -174,6 +174,7 @@ int main(){
 	sprintf(fout,"ref0.dat");
 	arf.out_amp(fout,' ');	// export raw data
 	arf.Sigmoid(11.0,1.0);	// trucation by Sigmoid function
+	arf.Gauss(12.5,3.0); 	// apply Gaussian window
 	arf.Gauss(11.8,0.5); 	// apply Gaussian window
 	sprintf(fout,"ref1.dat");
 	arf.out_amp(fout,' '); // export windowed waveform 
@@ -183,6 +184,7 @@ int main(){
 	sprintf(fout,"wv0.dat");
 	awv.out_amp(fout,' ');	// export raw data
 	awv.Sigmoid(11.5,1.0);	// trunction by Sigmoid function
+	arf.Gauss(12.5,3.0); 	// apply Gaussian window
 	awv.Gauss(tb,sig);	// applly Gaussian window
 	sprintf(fout,"wv1.dat");
 	awv.out_amp(fout,' ');	// export windowed waveform 
@@ -198,7 +200,7 @@ int main(){
 	// Frequency Range
 	double f1,f2,omg;	
 	int nf1,nf2,nf;
-	f1=0.6; f2=1.5; 
+	f1=0.5; f2=1.5; 
 	nf1=awv.get_fnum(f1);
 	nf2=awv.get_fnum(f2);
 	f1=awv.get_f(nf1);

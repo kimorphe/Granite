@@ -208,7 +208,7 @@ class AWV:
         t0=11; x90=1
         Zmd=sigmoid(self.time-t0,x90)
         self.amp*=Zmd
-        tb=12   # assumed mean TOF
+        tb=12.5   # assumed mean TOF
         Sig2=6  # 2-sigma width
         Sig=Sig2/2
         self.Gauss(tb,Sig,apply=True)   # Preliminary windowing
@@ -241,8 +241,8 @@ if __name__=="__main__":
     awv=AWV()   # A-scan wave container
 
     Mineral="Na" # Mineral type 
-    Mineral="Qt" # Mineral type 
     Mineral="K" # Mineral type 
+    Mineral="Qt" # Mineral type 
 
     #   ---- Transmitted Waveform -------
     ddir=ddr.DATA_DIR(Mineral)

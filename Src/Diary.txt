@@ -1,5 +1,4 @@
 2021/04/06(Tue.)
-
 ascan.cpp (+ fft.cpp, wave1d.cpp, waves.h)
 	A-scope波形に対する種々の操作
 	新たにSigmoid関数による波形切り出し操作を追加
@@ -21,8 +20,8 @@ mw.py
 	betaは囲い込み後に解を黄金分割法で精度改善
 	実行にはascan.cppからの出力cp.datが必要(slownessのデータを指定した周波数範囲で利用)
 	周波数の刻みcp.datに合わせられる
-
-2021/04/06(Tue.)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2021/04/07(Wed.)
 ascan.cpp
 	Voigt クラスを追加
 		Fractional Voigtモデルのcomplex modulusと大きさ、偏角、slownessを計算
@@ -38,5 +37,10 @@ ascan.cpp
 	sp.datの内容は
 		frequency, slowness(measured), slowness(model), phase vel.(measured), phase vel.(model)
 		
-	
-
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2021/04/08(Thu.)
+ascan.cpp 不要部分を削除
+	出力ファイル cp.datは廃止（sp.datに指定した周波数範囲の位相速度等が書き出される)
+	sp.datの内容は
+	frequency, slowness(measured), slowness(model), phase vel.(measured), phase vel.(model), Im(s)(model))
+		

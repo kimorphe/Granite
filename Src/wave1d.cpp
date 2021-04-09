@@ -217,7 +217,7 @@ void Wv1D::out_Amp(char *fn,int ofst){
 	for(int i=0;i<Np;i++){
 		j=(ofst+i)%Np;
 		xx=(i-ofst)*dx;
-		fprintf(fp,"%le %le %le %le\n",xx,Amp[j].real(),Amp[j].imag(),abs(Amp[j]));
+		fprintf(fp,"%le %le %le %le\n",xx,Amp[j].real()*Np,Amp[j].imag()*Np,abs(Amp[j])*Np);
 	}
 	fclose(fp);
 };
@@ -240,7 +240,7 @@ void Wv1D::Gauss(double tb, double sig){
 	double arg;
 	int i;
 	for(i=0;i<Nt;i++){
-		arg=time[i]-tb;
+		arg=(time[i]-tb)/sig;
 		arg*=arg;
 		amp[i]*=exp(-arg*0.5);
 	}

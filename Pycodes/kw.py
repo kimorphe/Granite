@@ -58,7 +58,7 @@ class AWV:
             time.append(float(dat[0]))
             amp.append(float(dat[1]))
         amp=amp-np.mean(amp)
-        amp=amp*2.0
+        #amp=amp*2.0
         time=np.array(time)*1.e6
         amp=np.array(amp)
         #amp-=np.mean(amp)
@@ -117,6 +117,27 @@ class AWV:
         ax.set_xlim([self.freq[1],3])
         ax.set_ylim([1.e-03,10])
         ax.grid(True)
+    def out_FFT(self,fn,FFT=True):
+        if FFT:
+            self.Amp=np.fft.fft(self.amp)
+        fp=open(fn,"w")
+        for k in range(self.Nt):
+            ff=self.freq[k]
+            A=np.real(self.Amp[k])
+            B=np.imag(self.Amp[k])
+            C=np.abs(self.Amp[k])
+            dat=str(ff)+", "+str(A)+", "+str(B)+", "+str(C)+"\n"
+            fp.write(dat)
+        fp.close()
+    def out_amp(self,fn):
+        fp=open(fn,"w")
+        for k in range(self.Nt):
+            A=self.amp[k]
+            tt=self.time[k]
+            dat=str(tt)+", "+str(A)+"\n"
+            fp.write(dat)
+        fp.close()
+
     def Wiener(self,eps=0.2,Apply=True,FFT=True):
         if FFT:
             self.Amp=np.fft.fft(self.amp)
@@ -253,9 +274,6 @@ if __name__=="__main__":
     bT=ddir.get_bT()
 
     num=201     # File No.
-    num=345
-    num=351
-    num=203     # File No.
     fname=dir_name+"/scope_"+str(num)+".csv"
     awv.load(fname) # load A-scan
 
@@ -267,6 +285,8 @@ if __name__=="__main__":
     #awv.Butterworth(tb,tw_6dB,mexp,apply=True)  # Apply Butterworth window
     #aref.Butterworth(tb_ref,tw_ref,mexp,apply=True) # Apply Butterworth window
     (t50,sig,t90)=aref.WinParam()
+    t50=11.8
+    sig=0.5
     aref.Gauss(t50,sig,apply=True)
     (t50,sig,t90)=awv.WinParam()
     awv.Gauss(t50,sig,apply=True)
@@ -280,6 +300,10 @@ if __name__=="__main__":
 
     aref.plot_FFT(bx,FFT=True,name=fnref)  # FFT + plotting
     awv.plot_FFT(bx,FFT=True,name=fname)   # FFT + plotting
+    aref.out_FFT("Aref.out",FFT=False)
+    aref.out_amp("aref.out")
+
+
     Wnr=awv.Wiener(eps=0.2,FFT=False)
     awv.Amp/=aref.Amp   # Deconvolution
     awv.plot_FFT(bx,FFT=False,name="transfer func.")   # FFT + plotting

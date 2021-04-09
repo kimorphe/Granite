@@ -158,9 +158,9 @@ int main(){
 	Wv1D awv,arf;
 
 	char fnref[128]="../1MHznew.csv";	// Reference signal
-	char fname[128]="../Quartz/scope_432.csv"; // Transmitted waveform
+	//char fname[128]="../Quartz/scope_123.csv"; // Transmitted waveform
 	//char fname[128]="../Na_Feldspar/scope_223.csv"; // Transmitted waveform
-	//char fname[128]="../K_Feldspar/scope_323.csv"; // Transmitted waveform
+	char fname[128]="../K_Feldspar/scope_323.csv"; // Transmitted waveform
 
 	// load refrence signal
 	arf.load(fnref);
@@ -174,17 +174,19 @@ int main(){
 	sprintf(fout,"ref0.dat");
 	arf.out_amp(fout,' ');	// export raw data
 	arf.Sigmoid(11.0,1.0);	// trucation by Sigmoid function
-	arf.Gauss(12.5,3.0); 	// apply Gaussian window
+	//arf.Gauss(12.5,3.0); 	// apply Gaussian window
 	arf.Gauss(11.8,0.5); 	// apply Gaussian window
 	sprintf(fout,"ref1.dat");
 	arf.out_amp(fout,' '); // export windowed waveform 
 	arf.FFT(1);		// perform FFT
+	char fdbg[128]="Aref.out";
+	arf.out_Amp(fdbg,0);
 
 	tb=12.5;sig=0.5;	// set Window parameter for the A-scan
 	sprintf(fout,"wv0.dat");
 	awv.out_amp(fout,' ');	// export raw data
 	awv.Sigmoid(11.5,1.0);	// trunction by Sigmoid function
-	arf.Gauss(12.5,3.0); 	// apply Gaussian window
+	//arf.Gauss(12.5,3.0); 	// apply Gaussian window
 	awv.Gauss(tb,sig);	// applly Gaussian window
 	sprintf(fout,"wv1.dat");
 	awv.out_amp(fout,' ');	// export windowed waveform 

@@ -66,3 +66,27 @@ bscan.cpp, ascan.cpp
 	    How python FFT works with data of non 2^p length has not been checked.
 	    Is simple zero padding is OK ?  Need to be cheked.
 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2021/04/09(Fri.)
+ascan.cppとkw.pyの結果の違いについて
+	原因解明: ascan.cpp-wave1d.cppに誤り 
+		Wv1D::Gauss()で、標準偏差sigで引数を割るのを忘れていた。
+		Gauss窓の幅が意図した通りにはなっていなかった
+		(debuggingの方法：参照波形のA-scanと周波数スペクトルを
+		kw.pyとascan.cppで比較、窓関数をかけた後の波形が異なることが判明）
+
+
+	kw.py 波形のload時に振幅を2倍していた(単位を速度にするための換算係数）
+	ややこしいのでそのまま(1倍)にしておくことに。
+
+	bscan.cpp+Pycodes/cp_hist.pyでヒストグラムのカラーマップは概ね一致することを確認
+	FFT with zero padding was found to give correct spectrum. 
+
+	Next:
+	* ascan.cppの整理(不要部分を削除してslimにする)
+	* bscan.cppも同じ
+	* 窓関数のかけ方を正当化するための論拠(窓関数パラメータ設定の合理化、理由付けagain)
+	* viscoelastic complex modulus M(w)でのfitting (Maxwell modelも検討すべきか？）
+	* 平均的なcp(w)と外れ値の比較,原因救命
+	* M(w) parameterの分布
+

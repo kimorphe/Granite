@@ -248,7 +248,7 @@ void Wv2D::write_amp(int i, char fname[128]){
 void Wv2D::set_refwv(char fname[128],double tb,double sig){
 	arf.load(fname);
 	arf.Sigmoid(11.0,1.0);	// trucation by Sigmoid function
-	arf.Gauss(12.5,3.0);
+	//arf.Gauss(12.5,3.0);
 	arf.Gauss(tb,sig);
 	arf.FFT(1);
 	refwv_ready=true;
@@ -299,8 +299,8 @@ int main(){
 	char M[3]; 
 
 	sprintf(M,"%s","Qt");	// chose mineral type
-	sprintf(M,"%s","Na");
 	sprintf(M,"%s","K");
+	sprintf(M,"%s","Na");
 
 	bwv.load(M);			// Load waveform data (B-scan)
 	tb=11.8, sig=0.5;		// Gaussian window parameter
@@ -312,7 +312,7 @@ int main(){
 
 	//bwv.Sigmoid(11.5,1.0);		// Truncation by Sigmoid function
 	bwv.Sigmoid(11.0,1.0);		// Truncation by Sigmoid function
-	bwv.Gauss(12.5,3.0);		// Apply Guassian window
+	//bwv.Gauss(12.5,3.0);		// Apply Guassian window
 	tb=12.5, sig=0.5;
 	bwv.Gauss(tb,sig);		// Apply Guassian window
 //	sprintf(fout,"awv_win.dat");

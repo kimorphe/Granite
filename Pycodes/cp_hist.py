@@ -42,6 +42,7 @@ class CpHist:
         ax.set_xlabel("frequency [MHz]",fontsize=fsz)
         ax.set_ylabel("phase velocity [km/s]",fontsize=fsz)
         ax.set_aspect("auto")
+        ax.grid(True)
 
 
 

@@ -87,6 +87,24 @@ ascan.cppとkw.pyの結果の違いについて
 	* bscan.cppも同じ
 	* 窓関数のかけ方を正当化するための論拠(窓関数パラメータ設定の合理化、理由付けagain)
 	* viscoelastic complex modulus M(w)でのfitting (Maxwell modelも検討すべきか？）
-	* 平均的なcp(w)と外れ値の比較,原因救命
+	* 平均的なcp(w)と外れ値の比較,原因究明
 	* M(w) parameterの分布
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2021/04/10(Sat.)
+	* ascan.cpp
+	Voigt class in "ascan.cpp" --> separated from ascan.cpp to voigt.h and voigt.cpp
+	Least square fitting of cp (measured phase velocity) 
+		--> Voigt::linfit_cp(double *a, double *b); 
+			cp(freq.) = a x (frequency) + b 
+	cp(位相速度)の直線近似-->平均値と勾配を評価（cp-f curve分類の1st attempt)
+
+	* bscan.cpp
+	Voigtクラスを使って、位相速度を直線近似
+	--> linfit.outに結果を書き出し(a,b,cp_mean)
+	--> ../Pycodes/linfit_hist.pyでヒストグラムを表示
+
+	cpの周波数に対する勾配 正負両方のケースがある(ダンパーを含むようなModulusでは負の傾きが出せない)
+	Cole-Cole typeの使用が必要？
+
 

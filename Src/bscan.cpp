@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <complex.h>
 #include "waves.h"
+#include "voigt.h"
 
 using namespace std;
 
@@ -298,9 +299,9 @@ int main(){
 	char fnref[128]="../1MHznew.csv";
 	char M[3]; 
 
-	sprintf(M,"%s","Qt");	// chose mineral type
 	sprintf(M,"%s","K");
 	sprintf(M,"%s","Na");
+	sprintf(M,"%s","Qt");	// chose mineral type
 
 	bwv.load(M);			// Load waveform data (B-scan)
 	tb=11.8, sig=0.5;		// Gaussian window parameter
@@ -324,6 +325,8 @@ int main(){
 	bwv.unwrap(0.5);	// Unwrap phase spectrum from f0 [MHz] 
 //	sprintf(fout,"awv.fft");
 //	bwv.write_Amp_polar(33,fout);
+//
+	Voigt vgt;
 
 	int i,j;
 	double omg,freq;
@@ -331,10 +334,11 @@ int main(){
 		bwv.PhaseVel(ht);
 	double cp;
 	double PI=4.0*atan(1.0);
-	double f1=0.5;	// [MHz]
-	double f2=1.5;	// [MHz]
+	double f1=0.6;	// [MHz]
+	double f2=1.6;	// [MHz]
 	int j1=int(f1/bwv.df);
 	int j2=int(f2/bwv.df);
+	int nf=j2-j1+1;
 	FILE *fp=fopen("cp.dat","w");
 	fprintf(fp,"#f1, f2, nf\n");
 	f1=bwv.df*j1;
@@ -343,14 +347,23 @@ int main(){
 	fprintf(fp,"#number of waveforms\n");
 	fprintf(fp,"%d\n",bwv.nfile);
 	fprintf(fp,"# cp(w)[km/s] as a function of frequency\n");
+
+	vgt.setup(f1,f2,nf);	// set frequency range
+
+	FILE *ffit=fopen("linfit.out","w");
+	double a,b;
 	for(i=0;i<bwv.nfile;i++){
-	for(j=j1;j<=j2;j++){
-		freq=bwv.df*j;
-		omg=freq*2.*PI;
-		//fprintf(fp,"%lf, %lf\n",freq,bwv.cp[i][j]);
-		fprintf(fp,"%lf\n",bwv.cp[i][j]);
+		for(j=j1;j<=j2;j++){
+			freq=bwv.df*j;
+			omg=freq*2.*PI;
+			//fprintf(fp,"%lf, %lf\n",freq,bwv.cp[i][j]);
+			fprintf(fp,"%lf\n",bwv.cp[i][j]);
+			vgt.s_msd[j-j1]=1./bwv.cp[i][j];
+		}
+		vgt.linfit_cp(&a,&b);
+		fprintf(ffit,"%lf, %lf, %lf\n",a,b,a*0.5*(f1+f2)+b);
 	}
-	}
+	fclose(ffit);
 
 
 	// Histogram
@@ -369,7 +382,7 @@ int main(){
 	FILE *fh=fopen("cp.hist","w");
 	double x;
 	fprintf(fh,"#f1, f2, nf\n");
-	fprintf(fh,"%lf, %lf, %d\n",f1,f2,j2-j1+1);
+
 	fprintf(fh,"#cp1, cp2, nbin\n");
 	fprintf(fh,"%lf, %lf, %d\n",cp1,cp2,nbin);
 	fprintf(fh,"# count\n");

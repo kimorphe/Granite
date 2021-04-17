@@ -105,6 +105,11 @@ ascan.cppとkw.pyの結果の違いについて
 	--> ../Pycodes/linfit_hist.pyでヒストグラムを表示
 
 	cpの周波数に対する勾配 正負両方のケースがある(ダンパーを含むようなModulusでは負の傾きが出せない)
-	Cole-Cole typeの使用が必要？
-
-
+	Cole-Cole typeの使用が必要？ --> CC typeでもModululsの大きさは増加
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2021/04/16(Fri.)
+	k(w)=phase/h (wave number)をvisco elastic modulusで近似する(plan)
+	k(w)はeta(viscosity)による影響が曲率に出るが、実験結果の方の
+	k(w)hの曲率が微妙でfittingにどれくらい意味があるか自信が持てない.	
+	もっと確実かつ、全体像を掴むことができる類型化(classification
+	の方法が無いか？？

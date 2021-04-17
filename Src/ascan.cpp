@@ -11,9 +11,9 @@ int main(){
 	Wv1D awv,arf;
 
 	char fnref[128]="../1MHznew.csv";	// Reference signal
-	//char fname[128]="../Quartz/scope_123.csv"; // Transmitted waveform
-	//char fname[128]="../Na_Feldspar/scope_223.csv"; // Transmitted waveform
-	char fname[128]="../Na_Feldspar/scope_323.csv"; // Transmitted waveform
+	//char fname[128]="../Quartz/scope_333.csv"; // Transmitted waveform
+	char fname[128]="../K_Feldspar/scope_223.csv"; // Transmitted waveform
+	//char fname[128]="../Na_Feldspar/scope_123.csv"; // Transmitted waveform
 
 	// load refrence signal
 	arf.load(fnref);

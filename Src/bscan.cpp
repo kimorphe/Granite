@@ -299,9 +299,9 @@ int main(){
 	char fnref[128]="../1MHznew.csv";
 	char M[3]; 
 
-	sprintf(M,"%s","K");
-	sprintf(M,"%s","Na");
 	sprintf(M,"%s","Qt");	// chose mineral type
+	sprintf(M,"%s","Na");
+	sprintf(M,"%s","K");
 
 	bwv.load(M);			// Load waveform data (B-scan)
 	tb=11.8, sig=0.5;		// Gaussian window parameter
@@ -382,7 +382,7 @@ int main(){
 	FILE *fh=fopen("cp.hist","w");
 	double x;
 	fprintf(fh,"#f1, f2, nf\n");
-
+	fprintf(fh,"%lf, %lf, %d\n",f1,f2,j2-j1+1);
 	fprintf(fh,"#cp1, cp2, nbin\n");
 	fprintf(fh,"%lf, %lf, %d\n",cp1,cp2,nbin);
 	fprintf(fh,"# count\n");

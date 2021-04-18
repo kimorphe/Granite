@@ -11,8 +11,8 @@ int main(){
 	Wv1D awv,arf;
 
 	char fnref[128]="../1MHznew.csv";	// Reference signal
-	//char fname[128]="../Quartz/scope_333.csv"; // Transmitted waveform
-	char fname[128]="../K_Feldspar/scope_223.csv"; // Transmitted waveform
+	char fname[128]="../Quartz/scope_336.csv"; // Transmitted waveform
+	//char fname[128]="../Na_Feldspar/scope_13.csv"; // Transmitted waveform
 	//char fname[128]="../Na_Feldspar/scope_123.csv"; // Transmitted waveform
 
 	// load refrence signal
@@ -55,7 +55,7 @@ int main(){
 	// Frequency Range
 	double f1,f2,omg;	
 	int nf1,nf2,nf;
-	f1=0.5; f2=1.5; 
+	f1=0.6; f2=1.5; 
 	nf1=awv.get_fnum(f1);
 	nf2=awv.get_fnum(f2);
 	f1=awv.get_f(nf1);

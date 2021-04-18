@@ -94,6 +94,7 @@ class Wv2D{
 		double rho;	//mass density
 		void load(char M[3]);
 		double **amp;
+		double *amp_mean;
 		complex<double> **Amp;
 		double **phi;
 		double **cp;
@@ -142,7 +143,7 @@ void Wv2D::set_data_dir(char M[3]){
 }
 void Wv2D::load(char M[3]){
 
-	int i;
+	int i,j;
 	char fname[128],tmp[128];
 	double *pt;
 	complex<double> *zpt;
@@ -168,6 +169,9 @@ void Wv2D::load(char M[3]){
 	pt=(double *)malloc(sizeof(double)*nfile*Nt);
 	for(i=0;i<nfile;i++) amp[i]=pt+Nt*i;
 
+	amp_mean=(double *)malloc(sizeof(double)*Nt);
+	for(i=0;i<Nt;i++) amp_mean[i]=0.0;
+
 	phi=(double **)malloc(sizeof(double*)*nfile);
 	pt=(double *)malloc(sizeof(double)*nfile*Np);
 	for(i=0;i<nfile;i++) phi[i]=pt+Np*i;
@@ -188,7 +192,16 @@ void Wv2D::load(char M[3]){
 		sprintf(tmp,"scope_%d.csv",i);
 		strcat(fname,tmp);
 		awv.load(fname);
+
+		for(j=0;j<Nt;j++) amp_mean[j]+=awv.amp[j];
 	};
+	FILE *ftmp=fopen("amp_mean.dat","w");
+		for(j=0;j<Nt;j++){
+			amp_mean[j]/=Nt;
+			fprintf(ftmp,"%lf, %lf\n",t1+dt*j,amp_mean[j]);
+		}
+	fclose(ftmp);
+
 	puts(" Done !");
 };
 
@@ -306,26 +319,16 @@ int main(){
 	bwv.load(M);			// Load waveform data (B-scan)
 	tb=11.8, sig=0.5;		// Gaussian window parameter
 	bwv.set_refwv(fnref,tb,sig);	// load reference data and apply Gaussian window
-//	bwv.dcnv_all();
 
-//	char fout[128]="awv.dat";
-//	bwv.write_amp(33,fout);
-
-	//bwv.Sigmoid(11.5,1.0);		// Truncation by Sigmoid function
 	bwv.Sigmoid(11.0,1.0);		// Truncation by Sigmoid function
-	//bwv.Gauss(12.5,3.0);		// Apply Guassian window
 	tb=12.5, sig=0.5;
 	bwv.Gauss(tb,sig);		// Apply Guassian window
-//	sprintf(fout,"awv_win.dat");
-//	bwv.write_amp(33,fout);
 
 	bwv.FFT_all();	// Peform FFT 
 	bwv.dcnv_all();	// Deconvolution
 	double f0=0.5;	// [MHz]
 	bwv.unwrap(0.5);	// Unwrap phase spectrum from f0 [MHz] 
-//	sprintf(fout,"awv.fft");
-//	bwv.write_Amp_polar(33,fout);
-//
+
 	Voigt vgt;
 
 	int i,j;
@@ -334,7 +337,7 @@ int main(){
 		bwv.PhaseVel(ht);
 	double cp;
 	double PI=4.0*atan(1.0);
-	double f1=0.6;	// [MHz]
+	double f1=0.7;	// [MHz]
 	double f2=1.6;	// [MHz]
 	int j1=int(f1/bwv.df);
 	int j2=int(f2/bwv.df);
@@ -351,7 +354,7 @@ int main(){
 	vgt.setup(f1,f2,nf);	// set frequency range
 
 	FILE *ffit=fopen("linfit.out","w");
-	double a,b;
+	double a,b,cp_ave;
 	for(i=0;i<bwv.nfile;i++){
 		for(j=j1;j<=j2;j++){
 			freq=bwv.df*j;
@@ -360,8 +363,9 @@ int main(){
 			fprintf(fp,"%lf\n",bwv.cp[i][j]);
 			vgt.s_msd[j-j1]=1./bwv.cp[i][j];
 		}
-		vgt.linfit_cp(&a,&b);
-		fprintf(ffit,"%lf, %lf, %lf\n",a,b,a*0.5*(f1+f2)+b);
+		cp_ave=vgt.linfit_cp(&a,&b);
+		fprintf(ffit,"%lf, %lf, %lf, %lf\n",a,b,a*0.5*(f1+f2)+b,cp_ave);
+		//if(a<0.0) printf("%d\n",i);
 	}
 	fclose(ffit);
 

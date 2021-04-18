@@ -137,7 +137,7 @@ double Voigt::argmin_beta(double alpha){
 	return(bmin);
 };
 
-void Voigt::linfit_cp(double *a, double *b){
+double Voigt::linfit_cp(double *a, double *b){
 	int i;
 	double x,y;
 	double  a11,a12,a21,a22, b1,b2;
@@ -168,4 +168,5 @@ void Voigt::linfit_cp(double *a, double *b){
 	*b=(-a21*b1+a11*b2)/D;
 	//double yb=0.5*(*a)*(f1+f2)+(*b);
 	//printf("a=%lf, b=%lf mean=%lf %lf\n",*a,*b,b2,yb);
+	return(b2);
 };

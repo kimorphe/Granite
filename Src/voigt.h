@@ -19,7 +19,7 @@ class Voigt{
 		double s0fit();
 		double cost();
 		double argmin_beta(double alpha);
-		void linfit_cp(double *a, double *b);
+		double linfit_cp(double *a, double *b);
 	private:
 	protected:
 };

@@ -195,10 +195,14 @@ void Wv2D::load(char M[3]){
 
 		for(j=0;j<Nt;j++) amp_mean[j]+=awv.amp[j];
 	};
-	FILE *ftmp=fopen("amp_mean.dat","w");
+	char FN[128];
+	sprintf(FN,"amp_mean_%s.dat",M);
+	puts(FN);
+	//FILE *ftmp=fopen("amp_mean.dat","w");
+	FILE *ftmp=fopen(FN,"w");
 		for(j=0;j<Nt;j++){
 			amp_mean[j]/=Nt;
-			fprintf(ftmp,"%lf, %lf\n",t1+dt*j,amp_mean[j]);
+			fprintf(ftmp,"%le, %le\n",(t1+dt*j)*1.e-06,amp_mean[j]);
 		}
 	fclose(ftmp);
 
@@ -312,9 +316,9 @@ int main(){
 	char fnref[128]="../1MHznew.csv";
 	char M[3]; 
 
-	sprintf(M,"%s","Qt");	// chose mineral type
 	sprintf(M,"%s","Na");
 	sprintf(M,"%s","K");
+	sprintf(M,"%s","Qt");	// chose mineral type
 
 	bwv.load(M);			// Load waveform data (B-scan)
 	tb=11.8, sig=0.5;		// Gaussian window parameter

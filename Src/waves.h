@@ -36,8 +36,10 @@ class Wv1D{
 		int fft_stat;
 		double L2(double t1,double t2);
 		double max(double t1,double t2);
+		int arg_max(double t1,double t2);
 		void Butterworth(double tb, double Tw_6dB);
 		void Gauss(double tb, double sig);
+		void Tri(double tb, double sig);
 		void Sigmoid(double tb, double t90);
 		double gdelay();
 		int get_fnum(double ff);

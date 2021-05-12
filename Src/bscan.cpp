@@ -316,9 +316,9 @@ int main(){
 	char fnref[128]="../1MHznew.csv";
 	char M[3]; 
 
-	sprintf(M,"%s","Na");
-	sprintf(M,"%s","K");
 	sprintf(M,"%s","Qt");	// chose mineral type
+	sprintf(M,"%s","K");
+	sprintf(M,"%s","Na");
 
 	bwv.load(M);			// Load waveform data (B-scan)
 	tb=11.8, sig=0.5;		// Gaussian window parameter
@@ -341,8 +341,8 @@ int main(){
 		bwv.PhaseVel(ht);
 	double cp;
 	double PI=4.0*atan(1.0);
-	double f1=0.7;	// [MHz]
-	double f2=1.6;	// [MHz]
+	double f1=0.5;	// [MHz]
+	double f2=2.0;	// [MHz]
 	int j1=int(f1/bwv.df);
 	int j2=int(f2/bwv.df);
 	int nf=j2-j1+1;
@@ -359,19 +359,33 @@ int main(){
 
 	FILE *ffit=fopen("linfit.out","w");
 	double a,b,cp_ave;
-	for(i=0;i<bwv.nfile;i++){
-		for(j=j1;j<=j2;j++){
+	double *cpw;
+	cpw=(double *)malloc(sizeof(double)*(j2-j1+1));
+	for(j=j1;j<=j2;j++) cpw[j-j1]=0.0;
+	for(i=0;i<bwv.nfile;i++){	// waveform 
+		for(j=j1;j<=j2;j++){	// frequency 
 			freq=bwv.df*j;
 			omg=freq*2.*PI;
 			//fprintf(fp,"%lf, %lf\n",freq,bwv.cp[i][j]);
 			fprintf(fp,"%lf\n",bwv.cp[i][j]);
 			vgt.s_msd[j-j1]=1./bwv.cp[i][j];
+			cpw[j-j1]+=(bwv.cp[i][j]);
 		}
 		cp_ave=vgt.linfit_cp(&a,&b);
 		fprintf(ffit,"%lf, %lf, %lf, %lf\n",a,b,a*0.5*(f1+f2)+b,cp_ave);
 		//if(a<0.0) printf("%d\n",i);
 	}
 	fclose(ffit);
+
+	FILE *fcpw=fopen("cpw.out","w");
+	for(j=j1;j<=j2;j++){
+		freq=bwv.df*j;
+		omg=freq*2.*PI;
+	       	cpw[j-j1]/=bwv.nfile;
+		fprintf(fcpw,"%lf, %lf\n",freq,cpw[j-j1]);
+	};
+	fclose(fcpw);
+
 
 
 	// Histogram
@@ -400,4 +414,20 @@ int main(){
 	}
 	}
 	fclose(fh);
+
+	FILE *fc=fopen("cp.out","w");
+	fprintf(fc,"#nfile\n");
+	fprintf(fc,"%d\n",bwv.nfile);
+	fprintf(fh,"#f1, f2, nf\n");
+	fprintf(fh,"%lf, %lf, %d\n",f1,f2,j2-j1+1);
+	fprintf(fh,"#cp[km/s]\n");
+	for(i=0;i<bwv.nfile;i++){
+	for(j=j1;j<=j2;j++){
+		freq=bwv.df*j;
+		fprintf(fc,"%lf, %lf\n",freq,bwv.cp[i][j]);
+	}
+	fprintf(fc,"\n");
+	}
+
+	fclose(fc);
 };

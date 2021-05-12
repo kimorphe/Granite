@@ -185,6 +185,25 @@ double Wv1D::L2(double t1, double t2){
 	for(i=i1;i<=i2;i++) sum+=(amp[i]*amp[i]);
 	return(sqrt(sum)/(i2-i1+1));
 };
+int Wv1D::arg_max(double t1,double t2){
+	int i1,i2;
+	i1=int(t1/dt);
+	i2=int(t2/dt);
+	if(i1<0) i1=0;
+	if(i2<0) i2=0;
+	if(i1>=Nt-1) i1=Nt-1;
+	if(i2>=Nt-1) i2=Nt-1;
+	int i=0,imax=i2;
+	double amax=fabs(amp[i2]);
+	for(i=i1;i<i2;i++){
+	       	if(amax < fabs(amp[i])){
+		       	amax=fabs(amp[i]);
+			imax=i;
+		}
+	}
+	return(imax);
+
+};
 double Wv1D::max(double t1, double t2){
 	int i1,i2;
 	i1=int(t1/dt);
@@ -245,6 +264,17 @@ void Wv1D::Gauss(double tb, double sig){
 		amp[i]*=exp(-arg*0.5);
 	}
 };
+void Wv1D::Tri(double tb, double sig){
+	double arg;
+	int i;
+	for(i=0;i<Nt;i++){
+		arg=fabs(time[i]-tb)/sig;
+		amp[i]*=(1.-arg);
+		if(arg>1.0) amp[i]=0.0;
+	}
+};
+
+
 void Wv1D::Butterworth(double tb, double Tw_6dB){
 
 	int p=4;

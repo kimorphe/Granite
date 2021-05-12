@@ -143,8 +143,40 @@ ascan.cppとkw.pyの結果の違いについて
 
 	平均波形のunwrapした位相スペクトがおかしい(unwrapされていないような形)
 	-->個別の波形の位相スペクトルも見てみる。プログラム上の問題かどうかを確認するために
-	
-		
+2021/05/08 (Sat.)
+	unwrap結果の確認(再開)
+	到達時間が12micro sec程度
+	-->  exp(iw tf) tfが大き周波数のサンプリング間隔が荒すぎてunwrapが正しく行われない。
+	--> reference signalでdeconvolutionした後にunwrapする
+		あるいは、時間を適当にずらしてunwrapしたあとにずらした位相を加える
+
+	修正：mean_awv.cpp
+	 平均波形でdeconvolution --> awv.renew_phase() --> awv.unwrap(0.5)
+	平均波形からの位相遅れが周波数の関数として得られる
+	位相の勾配は正負どちらにもなりえる--> どう解釈するか？統計的にみると何が分かるか?
+2021/05/11 (Thu.)
+	bscan.cpp再び
+	cpw.outへ平均位相速度（あるいはslowness)を出力
+	multimodalな分布でなければカーブは意味をもつ
+	偏差成分は正規分的か？鉱物種による違いはどのようにあらわれるか？
+	-->分散関係の類型化（懸案の）
+
+2021/5/12(Wed.)
+	新規作成：
+		win_test.cpp (Window parameterの影響を調べる. Hunning窓関数）
+		tmax.cpp 
+			最大振幅とその時間を調べる。 -->tmax_M.out
+			位相と位相速度	--> phi_M.out
+			位相速度のヒストグラム --> cp_hist_M.out
+			位相速度-周波数関係の平均　--> cp_mean_M.out
+				M={Qt,Na,K}
+			wave1d.cpp(Ascanクラス)だけを使って位相速度を計算, Hnunning窓を使用)
+
+		May better look at slowness histogram  ?
+		Qt, K, Na一括処理
+		parameter決定
+		分散傾向の分類dc/dw >0, <0
+		Theoretical Slowness curve
+	 
 
 	
-

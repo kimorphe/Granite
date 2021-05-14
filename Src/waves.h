@@ -14,7 +14,7 @@ class Wv1D{
 	public:
 		int Nt; // original data length
 		int Np;	// FFT data length
-		double *amp,*time,*tg;
+		double *amp,*time,*tg,*freq;
 		complex<double> *Amp;
 		double *phi;
 		double t1,t2,dt;
@@ -40,6 +40,7 @@ class Wv1D{
 		void Butterworth(double tb, double Tw_6dB);
 		void Gauss(double tb, double sig);
 		void Tri(double tb, double sig);
+		void Hann(double tb, double sig);
 		void Sigmoid(double tb, double t90);
 		double gdelay();
 		int get_fnum(double ff);

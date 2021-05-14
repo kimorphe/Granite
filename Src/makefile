@@ -1,14 +1,19 @@
 all: ascan bscan mean_awv win_test tmax
 ascan: ascan.o fft.o wave1d.o voigt.o
 	g++ -o ascan  ascan.o fft.o wave1d.o voigt.o
+	cp ascan ../
 bscan: bscan.o fft.o wave1d.o voigt.o
 	g++ -o bscan  bscan.o fft.o wave1d.o voigt.o
+	cp bscan ../
 mean_awv: mean_awv.o fft.o wave1d.o
 	g++ -o mean_awv mean_awv.o fft.o wave1d.o
+	cp mean_awv ../
 win_test: win_test.o fft.o wave1d.o
 	g++ -o win_test  win_test.o fft.o wave1d.o
+	cp win_test ../
 tmax: tmax.o fft.o wave1d.o
 	g++ -o tmax  tmax.o fft.o wave1d.o
+	cp tmax ../
 
 tmax.o: tmax.cpp
 	g++ -c tmax.cpp

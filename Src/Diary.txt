@@ -163,20 +163,58 @@ ascan.cppとkw.pyの結果の違いについて
 
 2021/5/12(Wed.)
 	新規作成：
-		win_test.cpp (Window parameterの影響を調べる. Hunning窓関数）
-		tmax.cpp 
-			最大振幅とその時間を調べる。 -->tmax_M.out
-			位相と位相速度	--> phi_M.out
-			位相速度のヒストグラム --> cp_hist_M.out
-			位相速度-周波数関係の平均　--> cp_mean_M.out
-				M={Qt,Na,K}
-			wave1d.cpp(Ascanクラス)だけを使って位相速度を計算, Hnunning窓を使用)
+	win_test.cpp (Window parameterの影響を調べる. Hunning窓関数）
+	tmax.cpp 
+		最大振幅とその時間を調べる。 -->tmax_M.out
+		位相と位相速度	--> phi_M.out
+		位相速度のヒストグラム --> cp_hist_M.out
+		位相速度-周波数関係の平均　--> cp_mean_M.out
+			M={Qt,Na,K}
+		wave1d.cpp(Ascanクラス)だけを使って位相速度を計算, Hnunning窓を使用)
 
-		May better look at slowness histogram  ?
-		Qt, K, Na一括処理
-		parameter決定
-		分散傾向の分類dc/dw >0, <0
-		Theoretical Slowness curve
-	 
+	May better look at slowness histogram  ?
+	Qt, K, Na一括処理
+	parameter決定
+	分散傾向の分類dc/dw >0, <0
+	Theoretical Slowness curve
+2021/5/13(Thr.)
+	tmax.cpp
+		周波数毎の位相速度histogramを作成--> cp_hist2d_M.out
+		Hist1D, Hist2Dクラスを追加
+		出力追加：tmax_hist_M.out (最大振幅時刻(negative)のヒストグラム)
+	周波数によって分布はあまり変わらない。
+	Qtは分散が小さい。Kは非対称な分布になる--> tbを調整したら概ね対称になった
+	tmaxはnegative peakで取るように修正
 
 	
+	hist2d.py--> cp-freq histogramを表示
+
+
+	Ascan.py --> typical_M.png (typical A-scans incld. reference )
+	bscan.py --> bscan_M.png (B-scan waveforms) 
+	hist2d.py --> hist2d_M.png
+	hist_total.py --> hist_total.png
+	
+2021/5/14(Fri.)
+	histogram ( tmax.cpp) のbin設定を修正
+	--> xmin,xmaxでbinの中央値を設定 
+
+	Window parameterのtuning (tb=12.45, sig=0.75) 根拠が言いにくい
+		tb=12.45 micro sec
+		sig=0.6 micro sec --> (f=0.833MHz相当)でPPTを作成する
+
+	"PPT_figs" created
+	 Misc. output files in ./Src deleted./ 
+	 
+	To use c/c++ codes: 
+		move to PPT_figs
+		type ../tmax (for example)
+	To show graphs:
+		in PPT_figs
+		type ***.py (such as hist2d.py, hist_total.py)
+	
+	Window Type: chaged from "Tri" to "Hann" window
+
+	../Pycodes/Cij.py : slowness surface plotting for (Qt,Na,K,Bt)
+		quasi P-waveのphase velocity計算、histogram表示
+		

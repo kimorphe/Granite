@@ -13,6 +13,8 @@ git add Src/Model/makefile
 
 git add Pycodes
 
+git add PPT_Figs/*.py
+
 git add git_cmd.sh
 git add 1MHznew.csv
 #git add cmp_pdf.sh

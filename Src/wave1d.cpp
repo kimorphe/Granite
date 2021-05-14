@@ -94,6 +94,7 @@ int Wv1D::FFT(int isgn){
 	if(fft_stat==0){
 		Amp=(complex<double> *)malloc(sizeof(complex<double>)*Np);
 		phi=(double *)malloc(sizeof(double)*Np);
+		freq=(double *)malloc(sizeof(double)*Np);
 	}
 	if(isgn==1){
 		for(int i=0;i<Nt;i++) Amp[i]=complex<double>(amp[i],0.0);
@@ -107,6 +108,7 @@ int Wv1D::FFT(int isgn){
 	double PI2=8.0*atan(1.0);
 	for(i=0;i<Np;i++){
 	       	phi[i]=arg(Amp[i]); 
+		freq[i]=i*df;
 		if(phi[i]<0.0) phi[i]=PI2+phi[i];
 	}
 	df=1./dt/Np;
@@ -152,21 +154,22 @@ void Wv1D::unwrap(double f0){	// unwraping from f=f0
 void Wv1D::out_Amp(char *fn){
 	FILE *fp=fopen(fn,"w");
 	df=1./dt/Np;
-	double freq;
+//	double freq;
 	for(int i=0;i<Np;i++){
-		freq=i*df;
-		fprintf(fp,"%le %le %le\n",freq,Amp[i].real(),Amp[i].imag());
+		//freq=i*df;
+		//fprintf(fp,"%le %le %le\n",freq,Amp[i].real(),Amp[i].imag());
+		fprintf(fp,"%le %le %le\n",freq[i],Amp[i].real(),Amp[i].imag());
 	}
 	fclose(fp);
 };
 void Wv1D::out_Amp_polar(char *fn){
 	FILE *fp=fopen(fn,"w");
 	df=1./dt/Np;
-	double freq;
+	//double freq;
 	for(int i=0;i<Np;i++){
-		freq=i*df;
+		//freq=i*df;
 		//fprintf(fp,"%le %le %le\n",freq,abs(Amp[i]),arg(Amp[i]));
-		fprintf(fp,"%le %le %le\n",freq,abs(Amp[i]),phi[i]);
+		fprintf(fp,"%le %le %le\n",freq[i],abs(Amp[i]),phi[i]);
 	}
 	fclose(fp);
 };
@@ -194,9 +197,11 @@ int Wv1D::arg_max(double t1,double t2){
 	if(i1>=Nt-1) i1=Nt-1;
 	if(i2>=Nt-1) i2=Nt-1;
 	int i=0,imax=i2;
-	double amax=fabs(amp[i2]);
+	//double amax=fabs(amp[i2]);
+	double amax=-amp[i2];
 	for(i=i1;i<i2;i++){
-	       	if(amax < fabs(amp[i])){
+	       	//if(amax < fabs(amp[i])){
+	       	if(amax < -amp[i]){
 		       	amax=fabs(amp[i]);
 			imax=i;
 		}
@@ -273,6 +278,19 @@ void Wv1D::Tri(double tb, double sig){
 		if(arg>1.0) amp[i]=0.0;
 	}
 };
+void Wv1D::Hann(double tb, double sig){
+	double PI=4.0*atan(1.0);
+	double arg,xi,w;
+	int i;
+	for(i=0;i<Nt;i++){
+		xi=(time[i]-tb)/sig;
+		arg=PI*(1.+xi);
+		w=0.5*(1.-cos(arg));
+		amp[i]*=w;
+		if(fabs(xi)>1.0) amp[i]=0.0;
+	}
+};
+
 
 
 void Wv1D::Butterworth(double tb, double Tw_6dB){

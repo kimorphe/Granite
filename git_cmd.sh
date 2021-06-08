@@ -14,6 +14,7 @@ git add Src/Model/makefile
 git add Src/FDM/*.py
 git add Src/FDM/*.cpp
 git add Src/FDM/*.h
+git add Src/FDM/*.inp
 git add Src/FDM/makefile
 
 git add Pycodes

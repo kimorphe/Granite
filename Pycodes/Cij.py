@@ -177,6 +177,7 @@ class STIFF:
     def hist(self,ax,clr="k"):
         nbin=50
         hist,bins=np.histogram(self.Pvel,weights=self.wgt,bins=nbin,range=(3,9))
+        hist,bins=np.histogram(self.Pvel,weights=self.wgt,bins=nbin,range=(3,8))
         Bin=0.5*(bins[0:-1]+bins[1:])
         ax.plot(Bin,hist,"-"+clr,linewidth=2)
         ax.grid(True)

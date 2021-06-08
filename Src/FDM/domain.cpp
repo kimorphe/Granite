@@ -56,10 +56,15 @@ void Dom2D::mem_alloc(){
 	for(j=0;j<Ndiv[1];j++){
 		kcell[i][j]=0;
 	}}
+
+	double *tmp=(double *)malloc(sizeof(double)*Ndiv[0]*Ndiv[1]);
+	cp=(double **)malloc(sizeof(double*)*Ndiv[0]);
+	for(i=0;i<Ndiv[0]*Ndiv[1];i++) tmp[i]=0.0;
+	for(i=0; i<Ndiv[0];i++) cp[i]=tmp+(i*Ndiv[1]);
 };
 
 //  ----------- DOMAIN PERFORATION  --------------
-void Dom2D::perfo_ellip(double *xc, double a, double b,int num){
+void Dom2D::perfo_ellip(double xc[2], double a, double b,int num){
 	int i,j;
 	double xcod[2];
 	double xx,yy;
@@ -387,6 +392,25 @@ void Dom2D :: out_kcell(){
 	}
 
 	fflush(fp);
+};
+void Dom2D :: out_cp(){
+
+	FILE *fp=fopen("cp.dat","w");
+	int i,j;
+
+
+	fprintf(fp,"# Xa[2], Xb[2] (physical domain) \n");
+	fprintf(fp," %lf %lf\n %lf %lf\n",Xa[0],Xa[1],Xb[0],Xb[1]);
+	fprintf(fp,"# Ndiv[0], Ndiv[1]\n");
+	fprintf(fp,"%d %d\n",Ndiv[0],Ndiv[1]);
+	fprintf(fp,"# cp[i][j]\n");
+	for(i=0;i<Ndiv[0];i++){
+	for(j=0;j<Ndiv[1];j++){
+		fprintf(fp, "%lf\n",cp[i][j]);
+	}
+	}
+	fflush(fp);
+	fclose(fp);
 };
 
 //-------------COURANT NUMBER  ------------------

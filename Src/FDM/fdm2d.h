@@ -28,6 +28,7 @@ class Dom2D{
 		int Nx[2],Ndiv[2],nwa[2],nwb[2];
 		int Ng;	// number of grids of a specified type
 		int **kcell;
+		double **cp;
 		void perfo(char *fn);
 		void perfo_ellip(char *fn);
 		void perfo_ellip(double *xc, double a, double b, int num);
@@ -35,6 +36,7 @@ class Dom2D{
 		void angled_slit(char *fn);
 		void polygon(char *fn);
 		void out_kcell();
+		void out_cp();
 		Dom2D(char *fname);
 		void CFL(double dt);
 		void gridNum(int ityp);

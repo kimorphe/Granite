@@ -217,4 +217,7 @@ ascan.cppとkw.pyの結果の違いについて
 
 	../Pycodes/Cij.py : slowness surface plotting for (Qt,Na,K,Bt)
 		quasi P-waveのphase velocity計算、histogram表示
+2021/06/07(Mon.) 
+	New directory "Src/FDM" created
+	 (acoustic approximation, heterogeneous media, modified grid system) 
 		

@@ -11,6 +11,11 @@ git add Src/Model/*.cpp
 git add Src/Model/*.h
 git add Src/Model/makefile
 
+git add Src/FDM/*.py
+git add Src/FDM/*.cpp
+git add Src/FDM/*.h
+git add Src/FDM/makefile
+
 git add Pycodes
 
 git add PPT_Figs/*.py

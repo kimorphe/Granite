@@ -11,7 +11,6 @@ using namespace std;
 Dom2D::Dom2D(char *fname){ //Contructor
 
 	int i,ndim=2;
-//	double Ya[2],Yb[2];
 	FILE *fp;
 	char cbff[128];
 	fp=fopen(fname,"r");	
@@ -27,19 +26,28 @@ Dom2D::Dom2D(char *fname){ //Contructor
 	fgets(cbff,128,fp);
 	fscanf(fp,"%d %d\n",Ndiv,Ndiv+1);
 
-	printf("Xa=%lf %lf\n",Xa[0], Xa[1]);
-	printf("Xb=%lf %lf\n",Xb[0], Xb[1]);
-	printf("Ndiv=%d %d\n",Ndiv[0], Ndiv[1]);
 	dx[0]=(Xb[0]-Xa[0])/Ndiv[0];
 	dx[1]=(Xb[1]-Xa[1])/Ndiv[1];
-	printf("dx=%lf %lf\n",dx[0], dx[1]);
 
 	Wd[0]=Xb[0]-Xa[0];
 	Wd[1]=Xb[1]-Xa[1];
 
+	fd2.init(Ndiv);
+	fd2.dh=dx[0];
+	fd2.rho=1.0;
+	fd2.Xa=Xa;
+	fd2.Xb=Xb;
+
 	fclose(fp);
 
 	mem_alloc();	// allocate & initialize kcell[i][j]
+
+	fd2.cp=cp;
+};
+void Dom2D::set_wvfm(char fname[128]){
+	inwv.setup(fname);
+	Nt=inwv.Nt;
+	dt=inwv.dt;
 };
 
 //  ----------- MEMORY ALLOCATION --------------
@@ -393,6 +401,20 @@ void Dom2D :: out_kcell(){
 
 	fflush(fp);
 };
+void Dom2D:: set_cplim(){
+	int i,j;
+	cmin=cp[0][0];
+	cmax=cmin;
+	double cc;
+	for(i=0;i<Ndiv[0];i++){
+	for(j=0;j<Ndiv[1];j++){
+		cc=cp[i][j];
+		if(cmax < cc) cmax=cc;
+		if(cmin > cc) cmin=cc;
+	}
+	}
+	printf("(cmax,cmin)=%lf, %lf\n",cmax,cmin);
+};
 void Dom2D :: out_cp(){
 
 	FILE *fp=fopen("cp.dat","w");
@@ -414,13 +436,12 @@ void Dom2D :: out_cp(){
 };
 
 //-------------COURANT NUMBER  ------------------
-void Dom2D :: CFL(double dt){
+void Dom2D :: CFL(){
 
+	cL=cmax;
 	cfl0=cL*dt/dx[0]*sqrt(2.0);
-	cfl1=cT*dt/dx[0]*sqrt(2.0);
-	printf("CFL(L-wave)=%lf\n",cfl0);
-	printf("   (T-wave)=%lf\n",cfl1);
-	printf("cL=%lf, cT=%lf\n",cL,cT);
+	printf("CFL=%lf\n",cfl0);
+	printf("cmax=%lf\n",cL);
 	printf("dt=%f dx=(%f, %f)\n",dt,dx[0],dx[1]);
 }
 

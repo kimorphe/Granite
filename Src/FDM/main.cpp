@@ -11,9 +11,9 @@ double cp_gen(int num){
 	static std::mt19937 eg2(-1);
 	static std::mt19937 eg3(-1);
 
-	static std::normal_distribution<> Gss1(2.0,1.50);
-	static std::normal_distribution<> Gss2(4.0,1.50);
-	static std::normal_distribution<> Gss3(6.5,1.50);
+	static std::normal_distribution<> Gss1(3.0,0.5);
+	static std::normal_distribution<> Gss2(4.0,0.5);
+	static std::normal_distribution<> Gss3(5.0,0.5);
 
 	double cp;
 	
@@ -25,45 +25,63 @@ double cp_gen(int num){
 	return(cp);
 };
 int main(){
-	std::random_device seed;
+	//std::random_device seed;
 	std::mt19937 engine(-1);
 	std::uniform_real_distribution<> urnd(0,1.0);
 	std::normal_distribution<> Gss(1.0,1.0);
 
 
-	char fgeom[124]="fdm.inp";
-	char fout[124]="kcell.dat";
-	Dom2D dom(fgeom);
+	char finwv[124]="inwv0.dat"; // incident waveform 
+	char fgeom[124]="fdm.inp";   // general input
+	char fout[124]="kcell.dat";  // domain data output
+
+	Dom2D dom(fgeom);	// load general input & set computational domain 
+	dom.set_wvfm(finwv);	// set excitation(incident) waveform
 
 	double xc[2],a,b;
 	int i,j;
-	a=0.3;
-	b=0.3;
-	dom.perfo_ellip(fgeom);
+
+	// create simple heterogeneous medium
+	a=3.0; b=3.0;
 	int Np=400;
 	for(i=0;i<Np;i++){
 		xc[0]=urnd(engine)*dom.Wd[0];
 		xc[1]=urnd(engine)*dom.Wd[1];
-		//dom.perfo_ellip(xc,a,b,i%3);
-		dom.perfo_ellip(xc,a,b,i);
+		dom.perfo_ellip(xc,a,b,i); // inclution No.i
 	};
 
 	double *cp0;
-
-	cp0=(double *)malloc(sizeof(double)*Np);
+	cp0=(double *)malloc(sizeof(double)*Np); // phase velocity data
 	for(i=0;i<Np;i++) cp0[i]=cp_gen(i%3);
-
 
 	int typ;
 	for(i=0;i<dom.Ndiv[0];i++){
 	for(j=0;j<dom.Ndiv[1];j++){
 		typ=dom.kcell[i][j];
-		dom.cp[i][j]=cp0[typ];
-		dom.kcell[i][j]=typ%3;
+		dom.cp[i][j]=cp0[typ]; // assign phase velocity to material grid
+		dom.kcell[i][j]=typ%3; 
 	}
 	}
 	dom.out_cp();
 	dom.out_kcell();
+	dom.set_cplim();
+	//dom.fd2.out(1);
+	dom.CFL();
+
+	exit(-1);
+
+	double amp;
+	int idat=0;
+	for(i=0;i;dom.Nt){
+		dom.fd2.s2v();	// stress --> velocity
+		dom.fd2.v2s();  // velocity --> stress
+		dom.fd2.periodicBC(); // periodic BC
+		amp=dom.inwv.get_amp(i); // get incident wave amplitude
+		dom.fd2.apply_Bcon(amp); // stress BC
+		if(i%10==0){
+			dom.fd2.out(idat++);
+		}
+	};
 
 	return(0);
 };

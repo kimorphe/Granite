@@ -1,3 +1,63 @@
+class Cmplx{	// Complex Number Class
+	public:
+		double re,im;
+		double Abs();
+		Cmplx(double a, double b);
+		Cmplx();
+		Cmplx Cnjg();
+		void disp();
+		void set(double a, double b);
+		Cmplx operator+(Cmplx z);
+		Cmplx operator-(Cmplx z);
+		Cmplx operator*(Cmplx z);
+		Cmplx operator/(Cmplx z);
+		Cmplx operator*(double z);
+		void operator=(double z);
+	private:
+};
+
+Cmplx exp(Cmplx z);
+class InWv{
+	public :
+		double t1,t2,dt,T0;
+		double *amp;
+		int Nt,wvtyp,nbrst,nwv;
+		int nsig; //narrowness factor used in Gaussian amplitude modulation
+		//InWv(char *);	// constructor (data read from file char*) 
+		void setup(char *);	// constructor (data read from file char*) 
+		InWv();
+		InWv(int Nt);	// 
+		void disp();
+		void gen_sin();		
+		void gen_cos();		
+		void gen_wvfm();
+		void out(char *);
+		double df,fmax;
+		Cmplx *Amp;
+		void DFT();
+		void DFTout(char *);
+		void Amod(double tb, int nsig);
+		double get_amp(int i);
+	private:
+		void mem_alloc();
+};
+class Field{
+	public:
+		double **s,**v1,**v2;
+		void init(int ndiv[2]);
+		double dh,dt,rho;
+		double *Xa,*Xb;
+		double **cp;
+		int Ndiv[2],Nv[2];
+		void s2v();
+		void v2s();
+		void periodicBC();
+		void apply_Bcon(double a);
+		void out(int num);
+	private:
+		void mem_alloc();
+	protected:
+};
 void mem_alloc2D(int nx, int ny, double ***pt);
 
 //	********************************************
@@ -17,6 +77,7 @@ class Circ{
 //-------------Dom2D Class ------------------
 class Dom2D{
 	public:
+		Field fd2;
 		double Xa[2],Xb[2],dx[2];// Physical Domain
 		double Wd[2];
 		int iYa[2],iYb[2];	 // Snapshot Window(2d-index)
@@ -24,11 +85,15 @@ class Dom2D{
 		double Wa[2], Wb[2];	 // PML Size
 		double xa[2],xb[2];	 // Computational Domain
 		double rho,cT,cL,cR,almb,amu; //density & stiffness constants
+		int Nt;
+		double dt;
 		double cfl0,cfl1;	//Counrant Numbers
 		int Nx[2],Ndiv[2],nwa[2],nwb[2];
 		int Ng;	// number of grids of a specified type
 		int **kcell;
 		double **cp;
+		double cmin,cmax;
+		void set_cplim();
 		void perfo(char *fn);
 		void perfo_ellip(char *fn);
 		void perfo_ellip(double *xc, double a, double b, int num);
@@ -38,8 +103,10 @@ class Dom2D{
 		void out_kcell();
 		void out_cp();
 		Dom2D(char *fname);
-		void CFL(double dt);
+		void CFL();
 		void gridNum(int ityp);
+		void set_wvfm(char fn[128]);
+		InWv inwv;
 	private:
 		void mem_alloc();
 };
@@ -51,61 +118,8 @@ class Dom2D{
 //	********************************************
 
 
-class Cmplx{	// Complex Number Class
-	public:
-		double re,im;
-		double Abs();
-		Cmplx(double a, double b);
-		Cmplx();
-		Cmplx Cnjg();
-		void disp();
-		void set(double a, double b);
-		Cmplx operator+(Cmplx z);
-		Cmplx operator-(Cmplx z);
-		Cmplx operator*(Cmplx z);
-		Cmplx operator/(Cmplx z);
-		Cmplx operator*(double z);
-		void operator=(double z);
-	private:
-};
-Cmplx exp(Cmplx z);
-class InWv{
-	public :
-		double t1,t2,dt,T0;
-		double *amp;
-		int Nt,wvtyp,nbrst,nwv;
-		int nsig; //narrowness factor used in Gaussian amplitude modulation
-		InWv(char *);	// constructor (data read from file char*) 
-		InWv(int Nt);	// 
-		void disp();
-		void gen_sin();		
-		void gen_cos();		
-		void gen_wvfm();
-		void out(char *);
-		double df,fmax;
-		Cmplx *Amp;
-		void DFT();
-		void DFTout(char *);
-		void Amod(double tb, int nsig);
-	private:
-		void mem_alloc();
-};		
-/*
-class InWv{
-	public :
-		double t1,t2,dt,T0;
-		double *amp;
-		int Nt,wvtyp,nbrst,nwv;
-		InWv(char *);
-		void disp();
-		void gen_sin();		
-		void gen_cos();		
-		void gen_wvfm();
-	private:
-		void mem_alloc();
-		
-};
-*/
+	
+
 class Src{
 	public:
 		double Xsa[2],Xsb[2];	// corner point

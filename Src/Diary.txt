@@ -217,10 +217,14 @@ ascan.cppとkw.pyの結果の違いについて
 
 	../Pycodes/Cij.py : slowness surface plotting for (Qt,Na,K,Bt)
 		quasi P-waveのphase velocity計算、histogram表示
-2021/06/07(Mon.) 
+2021/06/07(Mon) 
 	New directory "Src/FDM" created
 	 (acoustic approximation, heterogeneous media, modified grid system) 
-2021/06/09(Tue.)
-	FDM/Src/main.cpp, fdm2d.h, field.cpp, inwv.cpp, domain.cpp	
+2021/06/09(Wed)
+	/Src/FDM/main.cpp, fdm2d.h, field.cpp, inwv.cpp, domain.cpp	
 	一通りの構造が完成
 	--> fdm equations (index range), Periodic BC 確認して動くものにする
+2021/06/10(Thr)
+	/Src/Model/img2.py 　画像のよみこみ、鉱物種判定と外部ファイル(minmap.out)への結果出力
+	/Src/Model/clst.cpp minmap.outから、clusteringを行って、鉱物粒マップを作成する(予定)
+	

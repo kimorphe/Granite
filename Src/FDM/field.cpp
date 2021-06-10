@@ -12,7 +12,7 @@ void Field::init(int n[2]){
 };
 void Field::s2v(){
 	int i,j;
-	double rh=rho*dh;
+	double rh=2.*rho*dh;
 	double dSx,dSy;
 	for(i=0;i<Nv[0];i++){
 	for(j=0;j<Nv[1];j++){
@@ -25,18 +25,19 @@ void Field::s2v(){
 };
 void Field::v2s(){
 	int i,j;
-	double dvx,dvy;
+	double dvx,dvy,rdt2h=rho*dt*0.5/dh;
 	double lmb;
 	for(i=1;i<Nv[0];i++){
 	for(j=1;j<Nv[1];j++){
 		lmb=cp[i][j];
 		lmb*=lmb;
-		lmb*=(dt/dh);
-		dvx=(v1[i][j-1]-v1[i-1][j-1]+v1[i][j]-v1[i-1][j])*lmb;
-		dvy=(v2[i-1][j]-v2[i-1][j-1]+v2[i][j]-v2[i][j-1])*lmb;
-		s[i][j]+=(dvx+dvy);
+		lmb*=rdt2h;
+		dvx=(v1[i][j-1]-v1[i-1][j-1]+v1[i][j]-v1[i-1][j]);
+		dvy=(v2[i-1][j]-v2[i-1][j-1]+v2[i][j]-v2[i][j-1]);
+		s[i][j]+=(lmb*(dvx+dvy));
 	}
 	}
+//	printf("cp=%lf, dh=%lf, dt=%lf\n",cp[i-1][j-1],dh,dt);
 };
 void Field::apply_Bcon(double amp){
 	int j;

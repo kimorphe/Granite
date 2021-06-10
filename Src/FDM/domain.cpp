@@ -48,6 +48,7 @@ void Dom2D::set_wvfm(char fname[128]){
 	inwv.setup(fname);
 	Nt=inwv.Nt;
 	dt=inwv.dt;
+	fd2.dt=dt;
 };
 
 //  ----------- MEMORY ALLOCATION --------------

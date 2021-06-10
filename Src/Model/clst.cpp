@@ -11,8 +11,14 @@ class Pin{
 		void set(double a, double b);
 		int npix;
 		void init();
+		void clear_counter();
 	private:
 	protected:
+};
+void Pin::clear_counter(){
+	npix=0;
+	xg=0.0;
+	yg=0.0;
 };
 void Pin::init(){
 	npix=0;
@@ -31,7 +37,7 @@ double Pin::dist(int ix, int iy){
 	double ry=(iy-y);
 	return(sqrt(rx*rx+ry*ry));
 };
-
+//-----------------------------------------
 class IMG{
 	public:
 		int **M;
@@ -43,8 +49,77 @@ class IMG{
 		void load(char *fn);
 		int ipix(int k);
 		int jpix(int k);
+		Pin *pks;
+		int npk;
+		void init_Pins(int n, int m);
+		void clast(int mtyp);
 	private:
 	protected:
+};
+void IMG::clast(int mtyp){
+
+	int i,j,k,imin;
+	int ipx,ipy;
+	double r,rmin;
+
+	for(i=0;i<npk;i++) pks[i].clear_counter();
+	for(i=0;i<nQ;i++){
+		k=Q[i];
+		ipx=IMG::ipix(k);
+		ipy=IMG::jpix(k);
+
+		for(j=0;j<npk;j++){
+			r=pks[j].dist((float)ipx,(float)ipy);
+			//printf("r=%lf\n",r);
+			if(j==0){
+				rmin=r;
+				imin=0;
+			}
+			if(rmin>r){
+				rmin=r;
+				imin=j;
+			}
+		}
+		pks[imin].xg+=ipx;
+		pks[imin].yg+=ipy;
+		pks[imin].npix++;
+		//printf("imin=%d, rmin=%lf\n",imin,rmin);
+		//printf("xg,yg=%lf %lf\n",pks[imin].xg,pks[imin].yg);
+		//printf("x,y=%lf %lf\n",pks[imin].x,pks[imin].y);
+		//printf("nclst=%d\n",pks[imin].npix);
+	};
+
+	for(i=0;i<npk;i++){
+		if(pks[i].npix>0){
+			pks[i].xg/=pks[i].npix;
+			pks[i].yg/=pks[i].npix;
+		}
+		printf("%lf %lf %lf %lf\n",pks[i].x,pks[i].y,pks[i].xg,pks[i].yg);
+	};
+
+};
+void IMG::init_Pins(int n, int m){
+	npk=n*m;
+	pks=(Pin *)malloc(sizeof(Pin)*npk);
+
+	int dnpx,dnpy;
+	dnpx=int(Ndiv[0]/n);
+	dnpy=int(Ndiv[1]/m);
+
+	int npx=n;
+	int npy=m;
+
+	int i,j,k=0;
+	int ipx,ipy;
+	for(i=0;i<npx;i++){
+		ipx=int((i+0.5)*dnpx);
+	for(j=0;j<npy;j++){
+		ipy=int((j+0.5)*dnpy);
+		//printf("%d %d\n",ipx,ipy);
+		pks[k].init();
+		pks[k++].set(ipx,ipy);
+	}
+	}	
 };
 int IMG::ipix(int k){
 	return(int(k/Ndiv[0]));
@@ -62,7 +137,6 @@ void IMG::load(char *fname){
 	};
 	fgets(cbff,128,fp);
 	fscanf(fp,"%d, %d\n",Ndiv,Ndiv+1);
-	printf("Ndiv=%d %d\n",Ndiv[0],Ndiv[1]);
 	fgets(cbff,128,fp);
 	npix=Ndiv[0]*Ndiv[1];
 
@@ -92,6 +166,7 @@ int IMG::count(){
 		if(mnrl==2) nK++;
 		if(mnrl==3) nN++;
 	};
+	/*
 	puts("--------------------");
 	printf("nB=%d\n",nB);
 	printf("nQ=%d\n",nQ);
@@ -99,6 +174,7 @@ int IMG::count(){
 	printf("nN=%d\n",nN);
 	printf("total=%d\n",nB+nQ+nK+nN);
 	puts("--------------------");
+	*/
 
 	B=(int *)malloc(sizeof(int)*nB);
 	Q=(int *)malloc(sizeof(int)*nQ);
@@ -125,53 +201,9 @@ int main(){
 
 
 	int npx=10, npy=10;
-	int npk=npx*npy;
-	Pin *pks;
-	pks=(Pin *)malloc(sizeof(Pin)*npk);
+	im3.init_Pins(npx,npy);
 
-	int dnpx,dnpy;
-
-	dnpx=int(im3.Ndiv[0]/npx);
-	dnpy=int(im3.Ndiv[1]/npy);
-
-	int i,j,k;
-	int ipx,ipy;
-	k=0;
-	for(i=0;i<npx;i++){
-		ipx=int((i+0.5)*dnpx);
-	for(j=0;j<npy;j++){
-		ipy=int((j+0.5)*dnpy);
-		//printf("%d %d\n",ipx,ipy);
-		pks[k].init();
-		pks[k++].set(ipx,ipy);
-	}
-	}	
-
-	double rmin,r;
-	int imin;
-	k=im3.Q[503];
-	ipx=im3.ipix(k);
-	ipy=im3.jpix(k);
-	printf("ipx,ipy=%d %d\n",ipx,ipy);
-	for(i=0;i<npk;i++){
-		r=pks[i].dist((float)ipx,(float)ipy);
-		//printf("r=%lf\n",r);
-		if(i==0){
-			rmin=r;
-			imin=0;
-		}
-		if(rmin>r){
-		       rmin=r;
-		       imin=i;
-		}
-	}
-	pks[imin].xg+=ipx;
-	pks[imin].yg+=ipy;
-	pks[imin].npix++;
-	printf("imin=%d, rmin=%lf\n",imin,rmin);
-	printf("xg,yg=%lf %lf\n",pks[imin].xg,pks[imin].yg);
-	printf("x,y=%lf %lf\n",pks[imin].x,pks[imin].y);
-	printf("nclst=%d\n",pks[imin].npix);
+	im3.clast(3);
 
 	return(0);
 };

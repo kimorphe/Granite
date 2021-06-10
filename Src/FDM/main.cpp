@@ -68,17 +68,19 @@ int main(){
 	//dom.fd2.out(1);
 	dom.CFL();
 
-	exit(-1);
-
 	double amp;
 	int idat=0;
-	for(i=0;i;dom.Nt){
+	printf("Nt=%d\n",dom.Nt);
+	for(i=0;i<dom.Nt;i++){
 		dom.fd2.s2v();	// stress --> velocity
 		dom.fd2.v2s();  // velocity --> stress
+		/*
 		dom.fd2.periodicBC(); // periodic BC
 		amp=dom.inwv.get_amp(i); // get incident wave amplitude
 		dom.fd2.apply_Bcon(amp); // stress BC
-		if(i%10==0){
+		*/
+		if(i%100==0){
+			printf("i=%d (%d)\n",i,idat);
 			dom.fd2.out(idat++);
 		}
 	};

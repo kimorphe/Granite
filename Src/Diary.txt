@@ -220,4 +220,7 @@ ascan.cppとkw.pyの結果の違いについて
 2021/06/07(Mon.) 
 	New directory "Src/FDM" created
 	 (acoustic approximation, heterogeneous media, modified grid system) 
-		
+2021/06/09(Tue.)
+	FDM/Src/main.cpp, fdm2d.h, field.cpp, inwv.cpp, domain.cpp	
+	一通りの構造が完成
+	--> fdm equations (index range), Periodic BC 確認して動くものにする

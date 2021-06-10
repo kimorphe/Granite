@@ -8,6 +8,7 @@ git add Src/SOM/*.h
 git add Src/SOM/makefile
 
 git add Src/Model/*.cpp
+git add Src/Model/*.py
 git add Src/Model/*.h
 git add Src/Model/makefile
 

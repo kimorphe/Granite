@@ -53,7 +53,7 @@ class Field{
 		void v2s();
 		void periodicBC();
 		void apply_Bcon(double a);
-		void out(int num);
+		void out(int type, int num);
 	private:
 		void mem_alloc();
 	protected:

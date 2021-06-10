@@ -48,16 +48,16 @@ void Field::apply_Bcon(double amp){
 
 void Field::periodicBC(){
 	int i,Ny;
-	double dvx,dvy;
+	double dvx,dvy,rdt2h=rho*dt*0.5/dh;
 	double lmb;
 	Ny=Nv[1]-1;
 	for(i=1;i<Nv[0];i++){
 		lmb=cp[i][0];
 		lmb*=lmb;
-		lmb*=(dt/dh);
-		dvx=(v1[i][Ny]-v1[i-1][Ny]+v1[i][0]-v1[i-1][0])*lmb;
-		dvy=(v2[i-1][0]-v2[i-1][Ny]+v2[i][0]-v2[i][Ny])*lmb;
-		s[i][0]+=(dvx+dvy);
+		lmb*=rdt2h;
+		dvx=(v1[i][Ny]-v1[i-1][Ny]+v1[i][0]-v1[i-1][0]);
+		dvy=(v2[i-1][0]-v2[i-1][Ny]+v2[i][0]-v2[i][Ny]);
+		s[i][0]+=(lmb*(dvx+dvy));
 		s[i][Nv[1]]=s[i][0];
 	};
 };
@@ -84,20 +84,38 @@ void Field::mem_alloc(){
 
 };
 
-void Field::out(int num){
+void Field::out(int type, int num){
 	char fname[128];
-	sprintf(fname,"v%d.out",num);
-	FILE *fp=fopen(fname,"w");
+	FILE *fp;
 	int i,j;
-	fprintf(fp,"# Xa[2], Xb[2]\n");
-	fprintf(fp,"%lf, %lf, %lf, %lf\n",Xa[0],Xa[1],Xb[0],Xb[1]);
-	fprintf(fp,"# Ndiv[2]\n");
-	fprintf(fp,"%d, %d\n",Ndiv[0],Ndiv[1]);
-	fprintf(fp,"# vx, vy\n");
-	for(i=0; i<Nv[0];i++){
-	for(j=0; j<Nv[1];j++){
-		fprintf(fp,"%lf, %lf\n",v1[i][j],v2[i][j]);
+	if(type==0){
+		sprintf(fname,"s%d.out",num);
+		fp=fopen(fname,"w");
+		fprintf(fp,"# Xa[2], Xb[2]\n");
+		fprintf(fp,"%lf, %lf, %lf, %lf\n",Xa[0],Xa[1],Xb[0],Xb[1]);
+		fprintf(fp,"# Ndiv[2]\n");
+		fprintf(fp,"%d, %d\n",Ndiv[0],Ndiv[1]);
+		fprintf(fp,"# s\n");
+		for(i=0; i<Ndiv[0];i++){
+		for(j=0; j<Ndiv[1];j++){
+			fprintf(fp,"%lf\n",s[i][j]);
+		}
+		}
+		fclose(fp);
 	}
+	if(type==1){
+		sprintf(fname,"v%d.out",num);
+		fp=fopen(fname,"w");
+		fprintf(fp,"# Xa[2], Xb[2]\n");
+		fprintf(fp,"%lf, %lf, %lf, %lf\n",Xa[0],Xa[1],Xb[0],Xb[1]);
+		fprintf(fp,"# Ndiv[2]\n");
+		fprintf(fp,"%d, %d\n",Nv[0],Nv[1]);
+		fprintf(fp,"# vx, vy\n");
+		for(i=0; i<Nv[0];i++){
+		for(j=0; j<Nv[1];j++){
+			fprintf(fp,"%lf, %lf\n",v1[i][j],v2[i][j]);
+		}
+		}
+		fclose(fp);
 	}
-	fclose(fp);
 };

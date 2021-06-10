@@ -31,7 +31,7 @@ int main(){
 	std::normal_distribution<> Gss(1.0,1.0);
 
 
-	char finwv[124]="inwv0.dat"; // incident waveform 
+	char finwv[124]="inwv0.inp"; // incident waveform 
 	char fgeom[124]="fdm.inp";   // general input
 	char fout[124]="kcell.dat";  // domain data output
 
@@ -74,14 +74,14 @@ int main(){
 	for(i=0;i<dom.Nt;i++){
 		dom.fd2.s2v();	// stress --> velocity
 		dom.fd2.v2s();  // velocity --> stress
-		/*
 		dom.fd2.periodicBC(); // periodic BC
 		amp=dom.inwv.get_amp(i); // get incident wave amplitude
 		dom.fd2.apply_Bcon(amp); // stress BC
-		*/
 		if(i%100==0){
 			printf("i=%d (%d)\n",i,idat);
-			dom.fd2.out(idat++);
+			dom.fd2.out(0,idat);
+			dom.fd2.out(1,idat);
+			idat++;
 		}
 	};
 

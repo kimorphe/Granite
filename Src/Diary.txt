@@ -227,4 +227,10 @@ ascan.cppとkw.pyの結果の違いについて
 2021/06/10(Thr)
 	/Src/Model/img2.py 　画像のよみこみ、鉱物種判定と外部ファイル(minmap.out)への結果出力
 	/Src/Model/clst.cpp minmap.outから、clusteringを行って、鉱物粒マップを作成する(予定)
-	
+
+	FDM --> 0th ver ready (ran without apparent trouble)
+		v*.out : vlelocity field ( shown by vfld.py)
+		s*.out : stress(pressure) field
+	Input data files = inwv0.inp, fdm.inp  (inwv0.dat--> inwv0.inpに変更)
+
+	Imporve efficiency of vfld.py (use set_data command)

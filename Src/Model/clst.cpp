@@ -53,6 +53,7 @@ class IMG{
 		int npk;
 		void init_Pins(int n, int m);
 		void clast(int mtyp);
+		void write_Pins(int i);
 	private:
 	protected:
 };
@@ -93,10 +94,22 @@ void IMG::clast(int mtyp){
 		if(pks[i].npix>0){
 			pks[i].xg/=pks[i].npix;
 			pks[i].yg/=pks[i].npix;
+			pks[i].x=pks[i].xg;
+			pks[i].y=pks[i].yg;
 		}
-		printf("%lf %lf %lf %lf\n",pks[i].x,pks[i].y,pks[i].xg,pks[i].yg);
 	};
 
+};
+void IMG::write_Pins(int i){
+	char fname[128];
+	sprintf(fname,"p%d.out",i);
+	FILE *fp=fopen(fname,"w");
+
+	for(int i=0;i<npk;i++){
+		fprintf(fp,"%lf, %lf\n",pks[i].x,pks[i].y);
+	}
+
+	fclose(fp);
 };
 void IMG::init_Pins(int n, int m){
 	npk=n*m;
@@ -203,7 +216,12 @@ int main(){
 	int npx=10, npy=10;
 	im3.init_Pins(npx,npy);
 
-	im3.clast(3);
+	int i,itr=3;
+	im3.write_Pins(0);
+	for(i=0;i<itr;i++){
+		im3.clast(3);
+		im3.write_Pins(i+1);
+	}
 
 	return(0);
 };

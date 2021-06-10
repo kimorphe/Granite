@@ -11,7 +11,7 @@ git add Src/Model/*.cpp
 git add Src/Model/*.py
 git add Src/Model/*.h
 git add Src/Model/makefile
-git add Src/Model/.png
+git add Src/Model/*.png
 
 
 git add Src/FDM/*.py

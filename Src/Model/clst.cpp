@@ -52,126 +52,14 @@ class IMG{
 		Pin *pks;
 		int npk;
 		void init_Pins(int n, int m);
-		void clast(int mtyp);
-		void write_Pins(int i);
-		int find_Pin(int ix, int iy);
-		int **kcell;
+		void cluster(int mtyp);
+		void write_Pins(int i,int mtyp);
+		int find_Pin(int ix, int iy, int mtyp);
+		int **kcell_Q,**kcell_K,**kcell_N,**kcell_B;
 		void deploy(int mtyp);
 		void out_kcell(int mtyp);
 	private:
 	protected:
-};
-int IMG::find_Pin(int ix, int iy){
-	int j,imin;
-	double rmin,r;
-	rmin=pks[0].dist((float)ix,(float)iy);
-	imin=0;
-	for(j=1;j<npk;j++){
-		r=pks[j].dist((float)ix,(float)iy);
-		if(rmin>r){
-			rmin=r;
-			imin=j;
-		}
-	}
-	return(imin);
-};
-void IMG::clast(int mtyp){
-
-	int i,j,k,imin;
-	int ipx,ipy;
-	double r,rmin;
-	int *Ms,nM;
-
-	if(mtyp==0){
-		nM=nB; Ms=B;
-	}
-	if(mtyp==1){
-		nM=nQ; Ms=Q;
-	}
-	if(mtyp==2){
-		nM=nK; Ms=K;
-	}
-	if(mtyp==3){
-		nM=nN; Ms=N;
-	}
-
-	for(i=0;i<npk;i++) pks[i].clear_counter();
-
-	//for(i=0;i<nQ;i++){
-//		k=Q[i];
-	for(i=0;i<nM;i++){
-		k=Ms[i];
-		ipx=IMG::ipix(k);
-		ipy=IMG::jpix(k);
-
-		/*
-		for(j=0;j<npk;j++){
-			r=pks[j].dist((float)ipx,(float)ipy);
-			//printf("r=%lf\n",r);
-			if(j==0){
-				rmin=r;
-				imin=0;
-			}
-			if(rmin>r){
-				rmin=r;
-				imin=j;
-			}
-		}
-		*/
-		imin=IMG::find_Pin(ipx,ipy);
-		pks[imin].xg+=ipx;
-		pks[imin].yg+=ipy;
-		pks[imin].npix++;
-
-		//printf("imin=%d, rmin=%lf\n",imin,rmin);
-		//printf("xg,yg=%lf %lf\n",pks[imin].xg,pks[imin].yg);
-		//printf("x,y=%lf %lf\n",pks[imin].x,pks[imin].y);
-		//printf("nclst=%d\n",pks[imin].npix);
-	};
-
-	for(i=0;i<npk;i++){
-		if(pks[i].npix>0){
-			pks[i].xg/=pks[i].npix;
-			pks[i].yg/=pks[i].npix;
-			pks[i].x=pks[i].xg;
-			pks[i].y=pks[i].yg;
-		}
-	};
-
-};
-void IMG::write_Pins(int i){
-	char fname[128];
-	sprintf(fname,"p%d.out",i);
-	FILE *fp=fopen(fname,"w");
-
-	for(int i=0;i<npk;i++){
-		fprintf(fp,"%lf, %lf\n",pks[i].x,pks[i].y);
-	}
-
-	fclose(fp);
-};
-void IMG::init_Pins(int n, int m){
-	npk=n*m;
-	pks=(Pin *)malloc(sizeof(Pin)*npk);
-
-	int dnpx,dnpy;
-	dnpx=int(Ndiv[0]/n);
-	dnpy=int(Ndiv[1]/m);
-
-	int npx=n;
-	int npy=m;
-
-	int i,j,k=0;
-	int ipx,ipy;
-	for(i=0;i<npx;i++){
-		ipx=int((i+0.5)*dnpx);
-	for(j=0;j<npy;j++){
-		ipy=int((j+0.5)*dnpy);
-		//printf("%d %d\n",ipx,ipy);
-		pks[k].init();
-		pks[k++].set(ipx,ipy);
-	}
-	}	
 };
 int IMG::ipix(int k){
 	return(int(k/Ndiv[0]));
@@ -208,8 +96,158 @@ void IMG::load(char *fname){
 
 	ptmp=(int *)malloc(sizeof(int)*npix);
 	for(i=0;i<npix;i++) ptmp[i]=-1;
-	kcell=(int **)malloc(sizeof(int *)*Ndiv[0]);
-	for(i=0;i<Ndiv[0];i++) kcell[i]=ptmp+i*Ndiv[1];
+	kcell_B=(int **)malloc(sizeof(int *)*Ndiv[0]);
+	for(i=0;i<Ndiv[0];i++) kcell_B[i]=ptmp+i*Ndiv[1];
+
+	ptmp=(int *)malloc(sizeof(int)*npix);
+	for(i=0;i<npix;i++) ptmp[i]=-1;
+	kcell_Q=(int **)malloc(sizeof(int *)*Ndiv[0]);
+	for(i=0;i<Ndiv[0];i++) kcell_Q[i]=ptmp+i*Ndiv[1];
+
+	ptmp=(int *)malloc(sizeof(int)*npix);
+	for(i=0;i<npix;i++) ptmp[i]=-1;
+	kcell_K=(int **)malloc(sizeof(int *)*Ndiv[0]);
+	for(i=0;i<Ndiv[0];i++) kcell_K[i]=ptmp+i*Ndiv[1];
+
+	ptmp=(int *)malloc(sizeof(int)*npix);
+	for(i=0;i<npix;i++) ptmp[i]=-1;
+	kcell_N=(int **)malloc(sizeof(int *)*Ndiv[0]);
+	for(i=0;i<Ndiv[0];i++) kcell_N[i]=ptmp+i*Ndiv[1];
+
+};
+int IMG::find_Pin(int ix, int iy,int mtyp){
+	int j,imin;
+	double rmin,r;
+	rmin=pks[0].dist((float)ix,(float)iy);
+	imin=0;
+	int n0=(mtyp-1)*npk;
+	for(j=1;j<npk;j++){
+		r=pks[j+n0].dist((float)ix,(float)iy);
+		if(rmin>r){
+			rmin=r;
+			imin=j+n0;
+		}
+	}
+	return(imin);	// return global address
+};
+void IMG::cluster(int mtyp){
+
+	int i,j,k,imin;
+	int ipx,ipy;
+	double r,rmin;
+	int *Ms,nM;
+
+	if(mtyp==0){ nM=nB; Ms=B;}
+	if(mtyp==1){ nM=nQ; Ms=Q;}
+	if(mtyp==2){ nM=nK; Ms=K;}
+	if(mtyp==3){ nM=nN; Ms=N;}
+
+	int n0=(mtyp-1)*npk;
+	for(i=0;i<npk;i++) pks[n0+i].clear_counter();
+
+	for(i=0;i<nM;i++){
+		k=Ms[i];
+		ipx=IMG::ipix(k);
+		ipy=IMG::jpix(k);
+
+		imin=IMG::find_Pin(ipx,ipy,mtyp);
+		pks[imin].xg+=ipx;
+		pks[imin].yg+=ipy;
+		pks[imin].npix++;
+
+	};
+
+	int id;
+	for(i=0;i<npk;i++){
+		id=i+n0;
+		if(pks[id].npix>0){
+			pks[id].xg/=pks[id].npix;
+			pks[id].yg/=pks[id].npix;
+			pks[id].x=pks[id].xg;
+			pks[id].y=pks[id].yg;
+		}
+	};
+
+};
+void IMG::init_Pins(int n, int m){
+	npk=n*m;
+	pks=(Pin *)malloc(sizeof(Pin)*npk*3);
+
+	int dnpx,dnpy;
+	dnpx=int(Ndiv[0]/n);
+	dnpy=int(Ndiv[1]/m);
+
+	int npx=n;
+	int npy=m;
+
+	int i,j,k=0;
+	int ipx,ipy;
+	for(i=0;i<npx;i++){
+		ipx=int((i+0.5)*dnpx);
+	for(j=0;j<npy;j++){
+		ipy=int((j+0.5)*dnpy);
+		//printf("%d %d\n",ipx,ipy);
+		pks[k].init();
+		pks[k+npk].init();
+		pks[k+2*npk].init();
+
+		pks[k].set(ipx,ipy);
+		pks[k+npk].set(ipx,ipy);
+		pks[k+2*npk].set(ipx,ipy);
+		k++;
+	}
+	}	
+};
+
+void IMG::deploy(int mtyp){
+	int i,j,k;
+	int ipx,ipy,ipin;
+
+	int *Ms,nM,**kcell;
+	if(mtyp==0){
+		nM=nB; Ms=B; kcell=kcell_B;
+	}
+	if(mtyp==1){
+		nM=nQ; Ms=Q; kcell=kcell_Q;
+	}
+	if(mtyp==2){
+		nM=nK; Ms=K; kcell=kcell_K;
+	}
+	if(mtyp==3){
+		nM=nN; Ms=N; kcell=kcell_N;
+	}
+
+	for(i=0;i<Ndiv[0];i++){
+	for(j=0;j<Ndiv[1];j++){
+		kcell[i][j]=-1;
+	}
+	}
+	int n0=(mtyp-1)*npk;
+
+	for(i=0;i<nM;i++){
+		k=Ms[i];
+		ipx=IMG::ipix(k);
+		ipy=IMG::jpix(k);
+		ipin=IMG::find_Pin(ipx,ipy,mtyp);
+		//kcell[ipx][ipy]=ipin;	// global Pin No.
+		kcell[ipx][ipy]=ipin-n0;// local Pin No.
+	}
+};
+void IMG::write_Pins(int i,int mtyp){
+	char fname[128];
+
+	if(mtyp==0); sprintf(fname,"p%dB.out",i);
+	if(mtyp==1); sprintf(fname,"p%dQ.out",i);
+	if(mtyp==2); sprintf(fname,"p%dK.out",i);
+	if(mtyp==3); sprintf(fname,"p%dN.out",i);
+	FILE *fp=fopen(fname,"w");
+
+	int n0=(mtyp-1)*npk;
+	for(int j=0;j<npk;j++){
+		fprintf(fp,"%lf, %lf\n",pks[j+n0].x,pks[j+n0].y);
+	}
+
+	fclose(fp);
 };
 void IMG::out_kcell(int mtyp){
 	char fname[128];
@@ -217,6 +255,13 @@ void IMG::out_kcell(int mtyp){
 	if(mtyp==1) sprintf(fname,"%s","grainQ.out");
 	if(mtyp==2) sprintf(fname,"%s","grainK.out");
 	if(mtyp==3) sprintf(fname,"%s","grainN.out");
+
+	int **kcell;
+	if(mtyp==0) kcell=kcell_B;
+	if(mtyp==1) kcell=kcell_Q;
+	if(mtyp==2) kcell=kcell_K;
+	if(mtyp==3) kcell=kcell_N;
+
 
 	FILE *fp=fopen(fname,"w");
 	fprintf(fp,"#Nx, Ny\n");	
@@ -229,37 +274,6 @@ void IMG::out_kcell(int mtyp){
 	}
 	}
 	fclose(fp);
-};
-void IMG::deploy(int mtyp){
-	int i,j,k;
-	int ipx,ipy,ipin;
-	for(i=0;i<Ndiv[0];i++){
-	for(j=0;j<Ndiv[1];j++){
-		kcell[i][j]=-1;
-	}
-	}
-	int *Ms,nM;
-	if(mtyp==0){
-		nM=nB; Ms=B;
-	}
-	if(mtyp==1){
-		nM=nQ; Ms=Q;
-	}
-	if(mtyp==2){
-		nM=nK; Ms=K;
-	}
-	if(mtyp==3){
-		nM=nN; Ms=N;
-	}
-//	for(i=0;i<nQ;i++){
-//		k=Q[i];
-	for(i=0;i<nM;i++){
-		k=Ms[i];
-		ipx=IMG::ipix(k);
-		ipy=IMG::jpix(k);
-		ipin=IMG::find_Pin(ipx,ipy);
-		kcell[ipx][ipy]=ipin;
-	}
 };
 
 int IMG::count(){
@@ -274,15 +288,6 @@ int IMG::count(){
 		if(mnrl==2) nK++;
 		if(mnrl==3) nN++;
 	};
-	/*
-	puts("--------------------");
-	printf("nB=%d\n",nB);
-	printf("nQ=%d\n",nQ);
-	printf("nK=%d\n",nK);
-	printf("nN=%d\n",nN);
-	printf("total=%d\n",nB+nQ+nK+nN);
-	puts("--------------------");
-	*/
 
 	B=(int *)malloc(sizeof(int)*nB);
 	Q=(int *)malloc(sizeof(int)*nQ);
@@ -300,6 +305,7 @@ int IMG::count(){
 	};
 	return(npix);
 };
+//-------------------------------------------------------
 int main(){
 	char fname[128]="minmap.out";
 
@@ -313,10 +319,10 @@ int main(){
 
 	for(int mtyp=1;mtyp<4;mtyp++){
 		im3.init_Pins(npx,npy);
-		im3.write_Pins(0);
+		im3.write_Pins(0,mtyp);
 		for(i=0;i<itr;i++){
-			im3.clast(mtyp);
-			im3.write_Pins(i+1);
+			im3.cluster(mtyp);
+			im3.write_Pins(i+1,mtyp);
 		}
 		im3.deploy(mtyp);
 		im3.out_kcell(mtyp);

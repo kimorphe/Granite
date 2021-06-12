@@ -125,6 +125,7 @@ class Dom2D{
 		void gridNum(int ityp);
 		void set_wvfm(char fn[128]);
 		InWv inwv;
+		cp_list cQt, cK, cNa;
 	private:
 		void mem_alloc();
 };

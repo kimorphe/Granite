@@ -253,7 +253,7 @@ ascan.cppとkw.pyの結果の違いについて
 
 	次のステップ：
 		位相速度bank (Qt, K, Na)の作成（周波数範囲、上限、下限を限定、phi_M.outからcpを読み取ってformat）
-		FDM codeへのfeed (FDM/main.cppから読み込み)
+		FDM[ codeへのfeed (FDM/main.cppから読み込み)
 		cp_(Mineral)[grain No.] = randomly selcted cp (sampling from cp-bank[Mineral])
  
 		Model/grain.outをFDM/main.cppへloadする。（Ndivを合わせ、領域サイズ{Xa,Xb}を設定）
@@ -273,4 +273,23 @@ ascan.cppとkw.pyの結果の違いについて
 	上記で得られる位相速度のデータをSrc/FDM/cpbank.cppで切り出して、FDMプログラムに読み込む。
 
 
+	program一式完成（fdm + cpbank.cpp）
+	[未]画像データからモデル生成する/しない場合の切り替え
+	[未]正確な画像寸法の入力
+	[未]入射波形の設定（実験で得られた波形）
+	[未]計測に用いた試料の画像からのモデル生成
+	[未]B-scanデータの出力
+	[未]応力境界か周期境界か？
+	[未]単結晶音速データでの計算
+	[未]結晶粒の数の妥当性
+	[未]vfld.pyの効率化
+
+	各種プログラムの機能、実行
+	Src/Model/img2.py  --> minmap.out
+	Src/Model/clst.cpp --> grain.out
+
+	PPT_Figs/  ../tmax --> phi_M.out
+	Src/FDM/fdm --> cp.out --> cp.py
+		    --> v***.out --> vfld.py
+	　
 

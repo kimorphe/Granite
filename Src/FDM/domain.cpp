@@ -3,6 +3,7 @@
 #include<math.h> 
 #include<string.h>
 #include<stdlib.h>
+#include<random>
 #include "fdm2d.h"
 using namespace std;
 
@@ -10,7 +11,7 @@ using namespace std;
 //  ---------CONSTRUCTOR -----------
 Dom2D::Dom2D(char *fname){ //Contructor
 
-	int i,ndim=2;
+	int i,j,ndim=2;
 	FILE *fp,*fg;
 	char cbff[128];
 	fp=fopen(fname,"r");	
@@ -63,8 +64,39 @@ Dom2D::Dom2D(char *fname){ //Contructor
 	fclose(fp);
 
 	mem_alloc();	// allocate & initialize kcell[i][j]
-	if(imprt==1) Dom2D::import_kcell(fngrn);
+	double *cp1d;
+	if(imprt==1){
+		Dom2D::import_kcell(fngrn);
+		cp1d=(double *)malloc(sizeof(double)*ngrain*3);
+	};
+	char fn1[128]="../../PPT_Figs/phi_Qt.out";
+	char fn2[128]="../../PPT_Figs/phi_K.out";
+	char fn3[128]="../../PPT_Figs/phi_Na.out";
+	cQt.load(fn1);
+	cK.load(fn2);
+	cNa.load(fn3);
 
+	std::mt19937 engine(-1);
+	std::uniform_real_distribution<> urnd(0,1.0);
+	int m;
+	for(i=0;i<ngrain;i++){
+		m=int(urnd(engine)*cQt.ndat);
+		cp1d[i]=cQt.cp_bank[m];
+
+		m=int(urnd(engine)*cK.ndat);
+		cp1d[i+ngrain]=cK.cp_bank[m];
+
+		m=int(urnd(engine)*cNa.ndat);
+		cp1d[i+ngrain*2]=cNa.cp_bank[m];
+
+//		printf("%lf, %lf, %lf\n",cp1d[i],cp1d[i+ngrain],cp1d[i+2*ngrain]);
+	};
+
+	for(i=0;i<Ndiv[0];i++){
+	for(j=0;j<Ndiv[1];j++){
+		cp[i][j]=cp1d[kcell[i][j]];
+	}
+	}
 	fd2.cp=cp;
 };
 void Dom2D::set_wvfm(char fname[128]){

@@ -35,18 +35,11 @@ int main(){
 	char fgeom[128]="fdm.inp";   // general input
 	char fout[128]="kcell.dat";  // domain data output
 
-	char fn1[128]="../../PPT_Figs/phi_Qt.out";
-	char fn2[128]="../../PPT_Figs/phi_K.out";
-	char fn3[128]="../../PPT_Figs/phi_Na.out";
-	cp_list cQt, cK, cNa;
-	cQt.load(fn1);
-	cK.load(fn2);
-	cNa.load(fn3);
-	exit(-1);
 
 	Dom2D dom(fgeom);	// load general input & set computational domain 
 	dom.set_wvfm(finwv);	// set excitation(incident) waveform
 
+/*
 	double xc[2],a,b;
 	int i,j;
 
@@ -71,6 +64,7 @@ int main(){
 		dom.kcell[i][j]=typ%3; 
 	}
 	}
+*/
 	dom.out_cp();
 	dom.out_kcell();
 	dom.set_cplim();
@@ -78,7 +72,7 @@ int main(){
 	dom.CFL();
 
 	double amp;
-	int idat=0;
+	int i,idat=0;
 	printf("Nt=%d\n",dom.Nt);
 	for(i=0;i<dom.Nt;i++){
 		dom.fd2.s2v();	// stress --> velocity

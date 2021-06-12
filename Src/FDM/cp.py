@@ -36,7 +36,8 @@ class cp_data:
         Xa=self.Xa
         Xb=self.Xb
         ext=[Xa[0],Xb[0],Xa[1],Xb[1]]
-        ax.imshow(self.cp,extent=ext,cmap="jet",origin="lower",interpolation="none")
+        im=ax.imshow(self.cp,extent=ext,cmap="jet",origin="lower",interpolation="none")
+        return(im);
 
 
 if __name__=="__main__":
@@ -46,5 +47,6 @@ if __name__=="__main__":
     fig=plt.figure()
     ax=fig.add_subplot(111)
 
-    Vel.show_cp(ax)
+    im=Vel.show_cp(ax)
+    plt.colorbar(im)
     plt.show()

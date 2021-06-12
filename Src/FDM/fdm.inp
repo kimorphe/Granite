@@ -1,8 +1,8 @@
 #Xa,Xb
 0.0 0.0
-50.0 30.0
+80.0 80.0
 #Ndiv[2]
-250 150
+600 600
 #import cell data ( 1:yes, 0:No)
  1
 ../Model/grain.out

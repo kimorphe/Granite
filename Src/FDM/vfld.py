@@ -37,13 +37,11 @@ class vfld:
         self.Ndiv=Ndiv
         self.vx=vx
         self.vy=vy
-    def show_v(self,ax):
+    def show_v(self,ax,v1=0.0,v2=0.06):
         Xa=self.Xa
         Xb=self.Xb
         ext=[Xa[0],Xb[0],Xa[1],Xb[1]]
         Z=np.abs(self.vx*self.vx+self.vy*self.vy)
-        v1=0.0
-        v2=0.1
         ax.imshow(Z,extent=ext,cmap="jet",origin="lower",interpolation="bilinear",vmin=v1,vmax=v2)
 
 
@@ -55,7 +53,7 @@ if __name__=="__main__":
     vf=vfld()
 
 
-    nums=[0,1,2,3,4];
+    nums=np.array(range(15))
 
     for num in nums:
         vf.load(num)

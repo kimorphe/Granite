@@ -22,13 +22,13 @@ class Mmap:
         self.ny=ny;
         self.M=M
         fp.close()
-    def show(self,ax):
-        ax.imshow(np.mod(self.M,8),aspect=1.0,cmap="jet",vmin=0,vmax=7)
+    def show(self,ax,nclr=7):
+        ax.imshow(np.mod(self.M,nclr),aspect=1.0,cmap="gray",vmin=0,vmax=nclr-1)
 
 
 if __name__=="__main__":
     mp=Mmap()
-    mp.load("grainN.out")
+    mp.load("grain.out")
 
     fig=plt.figure()
     ax=fig.add_subplot(111)

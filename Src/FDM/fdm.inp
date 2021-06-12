@@ -3,3 +3,6 @@
 50.0 30.0
 #Ndiv[2]
 250 150
+#import cell data ( 1:yes, 0:No)
+ 1
+../Model/grain.out

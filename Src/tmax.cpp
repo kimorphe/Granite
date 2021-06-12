@@ -307,6 +307,7 @@ int main(){
 		amax_ave/=count;
 		printf("tmax=%lf, amax=%lf\n",tmax_ave,amax_ave);
 
+
 		count=0;
 		hst1.clear();
 		hst2.clear();
@@ -333,12 +334,19 @@ int main(){
 			awv.unwrap(0.5);	// unwrap the phase from 0.5MHz up and down ward
 
 			isum=0;
+			if(j==0){
+				fprintf(fp2,"#Nfile, Nf(freq)\n");
+				fprintf(fp2,"%d, %d\n",ddr.nfile,awv.Np);
+				fprintf(fp2,"#df (frequency increment)\n");
+				fprintf(fp2,"%lf\n",awv.df);
+			}
+			fprintf(fp2,"#freq, Amp, phi, cp\n");
 			for(int i=0;i<awv.Np;i++){
 				freq=i*awv.df;
 				omg=freq*PI2;
 				sp=awv.phi[i]/(omg*ht);
 				cp=1./sp;
-				fprintf(fp2,"%le %le %le, %le\n",freq,abs(awv.Amp[i]),awv.phi[i],cp);
+				fprintf(fp2,"%le, %le, %le, %le\n",freq,abs(awv.Amp[i]),awv.phi[i],cp);
 				if(cp >0.0 && cp <10.0){
 					cp_mean[i]+=cp;
 					cp_count[i]++;
@@ -350,7 +358,6 @@ int main(){
 				hst1.count(cp);
 				hst2.count(freq,cp);
 			};
-			fprintf(fp2,"\n");
 //			linfit(awv.freq+nf1,cpw+nf1,nfbin,P);
 //			printf("P=%lf %lf\n",P[0],P[1]);
 		}

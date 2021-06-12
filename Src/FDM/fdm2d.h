@@ -1,3 +1,19 @@
+class cp_list{
+	public:
+		int load(char fn[128]);
+		char fname[128];
+		double df;
+		int Nf,nfile;
+		int nfreq,ndat;
+		int nf1,nf2;
+		double *cp_bank,*freq;
+		void print_cp_bank();
+	private:
+		void read_header();
+		void read_all();
+		int retain(double f1, double f2);
+	protected:
+};
 class Cmplx{	// Complex Number Class
 	public:
 		double re,im;
@@ -91,6 +107,8 @@ class Dom2D{
 		int Nx[2],Ndiv[2],nwa[2],nwb[2];
 		int Ng;	// number of grids of a specified type
 		int **kcell;
+		void import_kcell(char fn[128]);
+		int ngrain;
 		double **cp;
 		double cmin,cmax;
 		void set_cplim();

@@ -11,7 +11,7 @@ using namespace std;
 Dom2D::Dom2D(char *fname){ //Contructor
 
 	int i,ndim=2;
-	FILE *fp;
+	FILE *fp,*fg;
 	char cbff[128];
 	fp=fopen(fname,"r");	
 	if(fp==NULL){
@@ -25,6 +25,28 @@ Dom2D::Dom2D(char *fname){ //Contructor
 	fscanf(fp,"%lf %lf\n",Xb,Xb+1);
 	fgets(cbff,128,fp);
 	fscanf(fp,"%d %d\n",Ndiv,Ndiv+1);
+
+	fgets(cbff,128,fp);
+	int imprt;
+	char fngrn[128];
+	ngrain=0;
+	fscanf(fp,"%d\n",&imprt);
+	if(imprt==1){
+		fscanf(fp,"%s\n",fngrn);
+		printf("%s\n",fngrn);
+		fg=fopen(fngrn,"r");
+
+		if(fg==NULL){
+			printf("File %s not found !\n",fngrn);
+			printf(" ---> abort process\n");
+			exit(-1);
+		};
+		fgets(cbff,128,fg);
+		fgets(cbff,128,fg);
+		fgets(cbff,128,fg);
+		fscanf(fg,"%d, %d\n",Ndiv,Ndiv+1);
+		printf("Ndiv=%d %d\n",Ndiv[0],Ndiv[1]);
+	};
 
 	dx[0]=(Xb[0]-Xa[0])/Ndiv[0];
 	dx[1]=(Xb[1]-Xa[1])/Ndiv[1];
@@ -41,6 +63,7 @@ Dom2D::Dom2D(char *fname){ //Contructor
 	fclose(fp);
 
 	mem_alloc();	// allocate & initialize kcell[i][j]
+	if(imprt==1) Dom2D::import_kcell(fngrn);
 
 	fd2.cp=cp;
 };
@@ -70,6 +93,25 @@ void Dom2D::mem_alloc(){
 	cp=(double **)malloc(sizeof(double*)*Ndiv[0]);
 	for(i=0;i<Ndiv[0]*Ndiv[1];i++) tmp[i]=0.0;
 	for(i=0; i<Ndiv[0];i++) cp[i]=tmp+(i*Ndiv[1]);
+};
+
+void Dom2D::import_kcell(char fn[128]){
+	FILE *fp=fopen(fn,"r");
+	char cbff[128];
+
+	fgets(cbff,128,fp);
+	fscanf(fp,"%d\n",&ngrain);
+	fgets(cbff,128,fp);
+	fscanf(fp,"%d, %d\n",Ndiv,Ndiv+1);
+	fgets(cbff,128,fp);
+	int i,j;
+	for(i=0; i<Ndiv[0];i++){
+	for(j=0; j<Ndiv[1];j++){
+		fscanf(fp,"%d\n",kcell[i]+j);
+	}
+	}
+	fclose(fp);
+	printf("ngrain=%d\n",ngrain);
 };
 
 //  ----------- DOMAIN PERFORATION  --------------

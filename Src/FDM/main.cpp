@@ -31,9 +31,18 @@ int main(){
 	std::normal_distribution<> Gss(1.0,1.0);
 
 
-	char finwv[124]="inwv0.inp"; // incident waveform 
-	char fgeom[124]="fdm.inp";   // general input
-	char fout[124]="kcell.dat";  // domain data output
+	char finwv[128]="inwv0.inp"; // incident waveform 
+	char fgeom[128]="fdm.inp";   // general input
+	char fout[128]="kcell.dat";  // domain data output
+
+	char fn1[128]="../../PPT_Figs/phi_Qt.out";
+	char fn2[128]="../../PPT_Figs/phi_K.out";
+	char fn3[128]="../../PPT_Figs/phi_Na.out";
+	cp_list cQt, cK, cNa;
+	cQt.load(fn1);
+	cK.load(fn2);
+	cNa.load(fn3);
+	exit(-1);
 
 	Dom2D dom(fgeom);	// load general input & set computational domain 
 	dom.set_wvfm(finwv);	// set excitation(incident) waveform

@@ -55,9 +55,9 @@ class IMG{
 		void cluster(int mtyp);
 		void write_Pins(int i,int mtyp);
 		int find_Pin(int ix, int iy, int mtyp);
-		int **kcell_Q,**kcell_K,**kcell_N,**kcell_B;
+		int **kcell;
 		void deploy(int mtyp);
-		void out_kcell(int mtyp);
+		void out_kcell();
 	private:
 	protected:
 };
@@ -93,35 +93,21 @@ void IMG::load(char *fname){
 	}
 	fclose(fp);
 
-
 	ptmp=(int *)malloc(sizeof(int)*npix);
 	for(i=0;i<npix;i++) ptmp[i]=-1;
-	kcell_B=(int **)malloc(sizeof(int *)*Ndiv[0]);
-	for(i=0;i<Ndiv[0];i++) kcell_B[i]=ptmp+i*Ndiv[1];
-
-	ptmp=(int *)malloc(sizeof(int)*npix);
-	for(i=0;i<npix;i++) ptmp[i]=-1;
-	kcell_Q=(int **)malloc(sizeof(int *)*Ndiv[0]);
-	for(i=0;i<Ndiv[0];i++) kcell_Q[i]=ptmp+i*Ndiv[1];
-
-	ptmp=(int *)malloc(sizeof(int)*npix);
-	for(i=0;i<npix;i++) ptmp[i]=-1;
-	kcell_K=(int **)malloc(sizeof(int *)*Ndiv[0]);
-	for(i=0;i<Ndiv[0];i++) kcell_K[i]=ptmp+i*Ndiv[1];
-
-	ptmp=(int *)malloc(sizeof(int)*npix);
-	for(i=0;i<npix;i++) ptmp[i]=-1;
-	kcell_N=(int **)malloc(sizeof(int *)*Ndiv[0]);
-	for(i=0;i<Ndiv[0];i++) kcell_N[i]=ptmp+i*Ndiv[1];
+	kcell=(int **)malloc(sizeof(int *)*Ndiv[0]);
+	for(i=0;i<Ndiv[0];i++) kcell[i]=ptmp+i*Ndiv[1];
 
 };
 int IMG::find_Pin(int ix, int iy,int mtyp){
 	int j,imin;
 	double rmin,r;
-	rmin=pks[0].dist((float)ix,(float)iy);
-	imin=0;
+	int unit=1;
 	int n0=(mtyp-1)*npk;
-	for(j=1;j<npk;j++){
+	if(mtyp==4){ n0=0;unit=3;}
+	rmin=pks[n0].dist((float)ix,(float)iy);
+	imin=n0;
+	for(j=1;j<npk*unit;j++){
 		r=pks[j+n0].dist((float)ix,(float)iy);
 		if(rmin>r){
 			rmin=r;
@@ -186,7 +172,6 @@ void IMG::init_Pins(int n, int m){
 		ipx=int((i+0.5)*dnpx);
 	for(j=0;j<npy;j++){
 		ipy=int((j+0.5)*dnpy);
-		//printf("%d %d\n",ipx,ipy);
 		pks[k].init();
 		pks[k+npk].init();
 		pks[k+2*npk].init();
@@ -203,25 +188,23 @@ void IMG::deploy(int mtyp){
 	int i,j,k;
 	int ipx,ipy,ipin;
 
-	int *Ms,nM,**kcell;
+	int *Ms,nM; 
 	if(mtyp==0){
-		nM=nB; Ms=B; kcell=kcell_B;
+		nM=nB; Ms=B; 
 	}
 	if(mtyp==1){
-		nM=nQ; Ms=Q; kcell=kcell_Q;
+		nM=nQ; Ms=Q; 
 	}
 	if(mtyp==2){
-		nM=nK; Ms=K; kcell=kcell_K;
+		nM=nK; Ms=K; 
 	}
 	if(mtyp==3){
-		nM=nN; Ms=N; kcell=kcell_N;
+		nM=nN; Ms=N; 
+	}
+	if(mtyp==4){
+		nM=nB; Ms=B; 
 	}
 
-	for(i=0;i<Ndiv[0];i++){
-	for(j=0;j<Ndiv[1];j++){
-		kcell[i][j]=-1;
-	}
-	}
 	int n0=(mtyp-1)*npk;
 
 	for(i=0;i<nM;i++){
@@ -229,8 +212,8 @@ void IMG::deploy(int mtyp){
 		ipx=IMG::ipix(k);
 		ipy=IMG::jpix(k);
 		ipin=IMG::find_Pin(ipx,ipy,mtyp);
-		//kcell[ipx][ipy]=ipin;	// global Pin No.
-		kcell[ipx][ipy]=ipin-n0;// local Pin No.
+		kcell[ipx][ipy]=ipin;	// global Pin No.
+		//kcell[ipx][ipy]=ipin-n0;// local Pin No.
 	}
 };
 void IMG::write_Pins(int i,int mtyp){
@@ -249,30 +232,25 @@ void IMG::write_Pins(int i,int mtyp){
 
 	fclose(fp);
 };
-void IMG::out_kcell(int mtyp){
+void IMG::out_kcell(){ 
 	char fname[128];
-	if(mtyp==0) sprintf(fname,"%s","grainB.out");
-	if(mtyp==1) sprintf(fname,"%s","grainQ.out");
-	if(mtyp==2) sprintf(fname,"%s","grainK.out");
-	if(mtyp==3) sprintf(fname,"%s","grainN.out");
 
-	int **kcell;
-	if(mtyp==0) kcell=kcell_B;
-	if(mtyp==1) kcell=kcell_Q;
-	if(mtyp==2) kcell=kcell_K;
-	if(mtyp==3) kcell=kcell_N;
-
+	sprintf(fname,"%s","grain.out");
 
 	FILE *fp=fopen(fname,"w");
+	fprintf(fp,"#npk (number of grains/mineral\n");	
+	fprintf(fp,"%d\n",npk);	
 	fprintf(fp,"#Nx, Ny\n");	
 	fprintf(fp,"%d, %d\n",Ndiv[0],Ndiv[1]);	
 	fprintf(fp,"# grain No.\n");	
-	int i,j;
+	int i,j,inull=0;
 	for(i=0;i<Ndiv[0];i++){
 	for(j=0;j<Ndiv[1];j++){
 		fprintf(fp,"%d\n",kcell[i][j]);
+		if(kcell[i][j]<0) inull++;
 	}
 	}
+	printf("null pixel=%d\n",inull);
 	fclose(fp);
 };
 
@@ -303,6 +281,10 @@ int IMG::count(){
 		if(mnrl==2) K[nK++]=i;
 		if(mnrl==3) N[nN++]=i;
 	};
+	printf("nB=%d\n",nB);
+	printf("nQ=%d\n",nQ);
+	printf("nK=%d\n",nK);
+	printf("nN=%d\n",nN);
 	return(npix);
 };
 //-------------------------------------------------------
@@ -317,15 +299,16 @@ int main(){
 	int i,itr=3;
 	int npx=10, npy=10;
 
+	im3.init_Pins(npx,npy);
 	for(int mtyp=1;mtyp<4;mtyp++){
-		im3.init_Pins(npx,npy);
 		im3.write_Pins(0,mtyp);
 		for(i=0;i<itr;i++){
 			im3.cluster(mtyp);
 			im3.write_Pins(i+1,mtyp);
 		}
 		im3.deploy(mtyp);
-		im3.out_kcell(mtyp);
 	};
+	im3.deploy(4);
+	im3.out_kcell();
 	return(0);
 };

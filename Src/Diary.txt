@@ -234,3 +234,43 @@ ascan.cppとkw.pyの結果の違いについて
 	Input data files = inwv0.inp, fdm.inp  (inwv0.dat--> inwv0.inpに変更)
 
 	Imporve efficiency of vfld.py (use set_data command)
+2021/06/11(Fri)
+	Model/clst.cpp(完成！)
+
+	Data Flow	
+	img2.py: 
+		png画像を読み込み(core_top_face.png)
+		4値化画像を出力（minmap.out-->minmap.pyで結果を表示）
+
+	clst.cpp 　<--- minmap.out
+		grain.out --> grain.py 
+		　kcell[i][j]=grain No.
+		  	Quartz: 0 <= grain No. < npk 
+			K-Feldspar: npk<= grain No. < 2*npk
+			Na-Feldspar: 2*npk <= grain No. < 3*npk
+			(npkは鉱物種あたりのgrain数）
+		* Biotiteは近傍の鉱物種に置き換え
+
+	次のステップ：
+		位相速度bank (Qt, K, Na)の作成（周波数範囲、上限、下限を限定、phi_M.outからcpを読み取ってformat）
+		FDM codeへのfeed (FDM/main.cppから読み込み)
+		cp_(Mineral)[grain No.] = randomly selcted cp (sampling from cp-bank[Mineral])
+ 
+		Model/grain.outをFDM/main.cppへloadする。（Ndivを合わせ、領域サイズ{Xa,Xb}を設定）
+		grain.outから読み込んだkcellを領域分割データとして使
+		grain No.%npk(grain数)番目のcpをdomainのpixelに与える。
+		FDMは周期境界条件-->stress B.Cに変更
+
+		A,B-scan波形の出力
+		入力波形を計測波形から作成する		
+2021/06/12(Sat)
+	Src/tmax.cppの出力書式を修正
+	【修正内容】
+		phi_K.out, phi_Qt.out の冒頭にデータ数(波形数,データ点数）、周波数刻みdfを追加。
+		データブロックの区切りにコメント行を挿入
+		データ間のdelimitterを,（カンマ）に統一
+	実行方法： PPT_figs/から ../tmaxを実行→Qt, K, Naに対する結果が実行箇所のフォルダに作成される
+	上記で得られる位相速度のデータをSrc/FDM/cpbank.cppで切り出して、FDMプログラムに読み込む。
+
+
+

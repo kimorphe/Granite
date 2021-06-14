@@ -53,7 +53,7 @@ if __name__=="__main__":
     vf=vfld()
 
 
-    nums=np.array(range(15))
+    nums=np.array(range(20))
 
     for num in nums:
         vf.load(num)

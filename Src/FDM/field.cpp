@@ -83,7 +83,81 @@ void Field::mem_alloc(){
 	for(i=0;i<Nv[0];i++) v2[i]=ptmp+i*Nv[1];
 
 };
+void Field::mem_alloc_wvs(int nrx,int nry, int nt){
+	int ndat=nrx*nry*nt;
+	swv=(double *)malloc(sizeof(double)*ndat);
+	v1wv=(double *)malloc(sizeof(double)*ndat);
+	v2wv=(double *)malloc(sizeof(double)*ndat);
+	Nt=nt;
 
+};
+void Field::set_xrec(double xrec[2], int nr){
+	nrx=nr;
+	irecx=(int *)malloc(sizeof(int)*nrx);
+	int i,ir;
+	double xr,dX=0.0;
+	if(nrx>1) dX=(xrec[1]-xrec[0])/(nrx-1);
+	for(i=0;i<nrx;i++){
+		xr=xrec[0]+dX*i;
+		ir=int((xr-Xa[0])/dh);
+		irecx[i]=ir;
+	};
+};
+void Field::set_yrec(double yrec[2], int nr){
+	nry=nr;
+	irecy=(int *)malloc(sizeof(int)*nry);
+	int i,ir;
+	double yr,dY=0.0;
+	if(nry>1) dY=(yrec[1]-yrec[0])/(nry-1);
+	for(i=0;i<nry;i++){
+		yr=yrec[0]+dY*i;
+		ir=int((yr-Xa[1])/dh);
+		irecy[i]=ir;
+	};
+};
+void Field::rec(){
+	int i,j,ir,jr;
+	for(ir=0; ir<nrx; ir++){
+		i=irecx[ir];
+	for(jr=0; jr<nry; jr++){
+		j=irecy[jr];
+		v1wv[iwv]=v1[i][j];
+		v2wv[iwv]=v2[i][j];
+		swv[iwv]=s[i][j];
+		iwv++;
+	}
+	}
+};
+void Field::write_bwvs(char *fn){
+	FILE *fp=fopen(fn,"w");
+	int i,j,k,nrec=nrx*nry;
+	int iwv0=0;
+	double x1,x2,y1,y2;
+	x1=Xa[0]+(irecx[0]+0.5)*dh;
+	x2=Xa[0]+(irecx[nrx-1]+0.5)*dh;
+
+	y1=Xa[1]+(irecy[0]+0.5)*dh;
+	y2=Xa[1]+(irecy[nry-1]+0.5)*dh;
+
+	fprintf(fp,"# xrec[2], nrx\n");
+	fprintf(fp,"%lf, %lf, %d\n",x1,x2,nrx);
+	fprintf(fp,"# yrec[2], nry\n");
+	fprintf(fp,"%lf, %lf, %d\n",y1,y2,nry);
+	fprintf(fp,"# Nt, dt \n");
+	fprintf(fp,"%d, %lf\n",Nt,dt);
+	fprintf(fp,"# v1, v2, s (for ix< nrx (for iy < nry (for it <Nt) )))\n");
+	for(i=0;i<nrx;i++){
+	for(j=0;j<nry;j++){
+		iwv=iwv0;
+		for(k=0;k<Nt;k++){
+			fprintf(fp,"%lf, %lf, %lf\n",v1wv[iwv],v2wv[iwv],swv[iwv]);
+			iwv+=nrec;
+		}
+		iwv0++;
+	}
+	}
+	fclose(fp);
+};
 void Field::out(int type, int num){
 	char fname[128];
 	FILE *fp;

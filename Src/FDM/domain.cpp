@@ -8,6 +8,11 @@
 using namespace std;
 
 
+void show_msg_quit(char fn[128]){
+	printf("File %s not found !\n",fn);
+	printf(" ---> abort process\n");
+	exit(-1);
+};
 //  ---------CONSTRUCTOR -----------
 Dom2D::Dom2D(char *fname){ //Contructor
 
@@ -26,10 +31,16 @@ Dom2D::Dom2D(char *fname){ //Contructor
 	fscanf(fp,"%lf %lf\n",Xb,Xb+1);
 	fgets(cbff,128,fp);
 	fscanf(fp,"%d %d\n",Ndiv,Ndiv+1);
+	fgets(cbff,128,fp);
+	fscanf(fp,"%d\n",&bc);
+	fgets(cbff,128,fp);
+	fscanf(fp,"%lf %lf %d\n",xrec,xrec+1,&nrx);
+	fgets(cbff,128,fp);
+	fscanf(fp,"%lf %lf %d\n",yrec,yrec+1,&nry);
 
 	fgets(cbff,128,fp);
 	int imprt;
-	char fngrn[128];
+	char fngrn[128],fn1[128],fn2[128],fn3[128];
 	ngrain=0;
 	fscanf(fp,"%d\n",&imprt);
 	if(imprt==1){
@@ -37,16 +48,17 @@ Dom2D::Dom2D(char *fname){ //Contructor
 		printf("%s\n",fngrn);
 		fg=fopen(fngrn,"r");
 
-		if(fg==NULL){
-			printf("File %s not found !\n",fngrn);
-			printf(" ---> abort process\n");
-			exit(-1);
-		};
+
+		if(fg==NULL) show_msg_quit(fngrn);
 		fgets(cbff,128,fg);
 		fgets(cbff,128,fg);
 		fgets(cbff,128,fg);
 		fscanf(fg,"%d, %d\n",Ndiv,Ndiv+1);
 		printf("Ndiv=%d %d\n",Ndiv[0],Ndiv[1]);
+
+		fscanf(fp,"%s\n",fn1);
+		fscanf(fp,"%s\n",fn2);
+		fscanf(fp,"%s\n",fn3);
 	};
 
 	dx[0]=(Xb[0]-Xa[0])/Ndiv[0];
@@ -61,6 +73,7 @@ Dom2D::Dom2D(char *fname){ //Contructor
 	fd2.Xa=Xa;
 	fd2.Xb=Xb;
 
+
 	fclose(fp);
 
 	mem_alloc();	// allocate & initialize kcell[i][j]
@@ -69,9 +82,6 @@ Dom2D::Dom2D(char *fname){ //Contructor
 		Dom2D::import_kcell(fngrn);
 		cp1d=(double *)malloc(sizeof(double)*ngrain*3);
 	};
-	char fn1[128]="../../PPT_Figs/phi_Qt.out";
-	char fn2[128]="../../PPT_Figs/phi_K.out";
-	char fn3[128]="../../PPT_Figs/phi_Na.out";
 	cQt.load(fn1);
 	cK.load(fn2);
 	cNa.load(fn3);
@@ -104,6 +114,12 @@ void Dom2D::set_wvfm(char fname[128]){
 	Nt=inwv.Nt;
 	dt=inwv.dt;
 	fd2.dt=dt;
+};
+
+void Dom2D::set_recs(){
+	fd2.set_xrec(xrec,nrx);
+	fd2.set_yrec(yrec,nry);
+	fd2.mem_alloc_wvs(nrx,nry,Nt);
 };
 
 //  ----------- MEMORY ALLOCATION --------------
@@ -518,6 +534,11 @@ void Dom2D :: CFL(){
 	printf("CFL=%lf\n",cfl0);
 	printf("cmax=%lf\n",cL);
 	printf("dt=%f dx=(%f, %f)\n",dt,dx[0],dx[1]);
+	if(cfl0>=1.0){
+		printf(" Stability condition is not satisfied.\n");
+		printf(" --> abort process.\n");
+		exit(-1);
+	};
 }
 
 //------------- GRID NUMBER  ------------------

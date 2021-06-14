@@ -60,6 +60,15 @@ class InWv{
 class Field{
 	public:
 		double **s,**v1,**v2;
+		double *swv, *v1wv, * v2wv;
+		int *irecx,*irecy,iwv;
+		int Nt;
+		void rec();
+		void mem_alloc_wvs(int nx, int ny, int nt);
+		void set_xrec(double xrc[2], int nx);
+		void set_yrec(double yrc[2], int ny);
+		int nrx,nry;
+		void write_bwvs(char *fn);
 		void init(int ndiv[2]);
 		double dh,dt,rho;
 		double *Xa,*Xb;
@@ -105,6 +114,7 @@ class Dom2D{
 		double dt;
 		double cfl0,cfl1;	//Counrant Numbers
 		int Nx[2],Ndiv[2],nwa[2],nwb[2];
+		int bc;	// boundary condition
 		int Ng;	// number of grids of a specified type
 		int **kcell;
 		void import_kcell(char fn[128]);
@@ -124,8 +134,11 @@ class Dom2D{
 		void CFL();
 		void gridNum(int ityp);
 		void set_wvfm(char fn[128]);
+		void set_recs();
 		InWv inwv;
 		cp_list cQt, cK, cNa;
+		double xrec[2],yrec[2];
+		int nrx,nry;
 	private:
 		void mem_alloc();
 };

@@ -275,13 +275,13 @@ ascan.cppとkw.pyの結果の違いについて
 
 	program一式完成（fdm + cpbank.cpp）
 	[未]画像データからモデル生成する/しない場合の切り替え
-	[未]正確な画像寸法の入力(円柱直径=66.1mm)
-	[未]入射波形の設定（実験で得られた波形）
+	[v]正確な画像寸法の入力(円柱直径=66.1mm)
+	[x]入射波形の設定（実験で得られた波形）
 	[未]計測に用いた試料の画像からのモデル生成
-	[未]B-scanデータの出力
-	[未]応力境界か周期境界か？
+	[v]B-scanデータの出力
+	[v]応力境界か周期境界か？
 	[未]単結晶音速データでの計算
-	[未]結晶粒の数の妥当性
+	[未,v]結晶粒の数の妥当性,結晶粒初期位置のrandamize
 	[未]vfld.pyの効率化
 
 	各種プログラムの機能、実行
@@ -292,4 +292,22 @@ ascan.cppとkw.pyの結果の違いについて
 	Src/FDM/fdm --> cp.out --> cp.py
 		    --> v***.out --> vfld.py
 	　
+2021/06/13/(Sun)
+	Phase velocity data files specifed in "fdm.inp".
+	dom.bc (=0: stress free, =1: periodic B.C imposed on the lateral boundaries)
+
+	bscan waveforms outputを追加
+	fdm.inp内でreceiver gridを設定　--> bwv.out 
+		--> bwv.py 
+		loop order:  
+			for irecx <nrx {
+			for irecy <nry {
+			for time < Nt{
+			}}}
+2021/06/14/(Mon)
+	FDM/bwv.py --> B-scan presentation enabled
+	Model/clst.cpp --> initial pin location randamized
+	FDM/inwv0.inp, fdm.inp (Xa,Xb--> set to actual domain size)
+
+	
 

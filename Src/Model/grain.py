@@ -6,6 +6,8 @@ class Mmap:
     def load(self,fname):
         fp=open(fname,"r")
         fp.readline()
+        npk=int(fp.readline())
+        fp.readline()
         dat=fp.readline().strip().split(",")
         nx=int(dat[0])
         ny=int(dat[1])
@@ -23,7 +25,7 @@ class Mmap:
         self.M=M
         fp.close()
     def show(self,ax,nclr=7):
-        ax.imshow(np.mod(self.M,nclr),aspect=1.0,cmap="gray",vmin=0,vmax=nclr-1)
+        ax.imshow(np.mod(self.M,nclr),aspect=1.0,cmap="hot",vmin=0,vmax=nclr-1)
 
 
 if __name__=="__main__":
@@ -33,6 +35,8 @@ if __name__=="__main__":
     fig=plt.figure()
     ax=fig.add_subplot(111)
     mp.show(ax)
+
+    fig.savefig("grain.png",bbox_inches="tight")
     plt.show()
 
 

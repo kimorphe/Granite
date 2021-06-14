@@ -1,6 +1,9 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
+#include <random>
+
+using namespace std;
 
 class Pin{
 	public:
@@ -156,6 +159,9 @@ void IMG::cluster(int mtyp){
 
 };
 void IMG::init_Pins(int n, int m){
+	std::mt19937 engine(-1);
+	std::uniform_real_distribution<> urnd(0,1.0);
+
 	npk=n*m;
 	pks=(Pin *)malloc(sizeof(Pin)*npk*3);
 
@@ -169,9 +175,11 @@ void IMG::init_Pins(int n, int m){
 	int i,j,k=0;
 	int ipx,ipy;
 	for(i=0;i<npx;i++){
-		ipx=int((i+0.5)*dnpx);
+		//ipx=int((i+0.5)*dnpx);
 	for(j=0;j<npy;j++){
-		ipy=int((j+0.5)*dnpy);
+		//ipy=int((j+0.5)*dnpy);
+		ipx=int(urnd(engine)*Ndiv[0]);
+		ipy=int(urnd(engine)*Ndiv[1]);
 		pks[k].init();
 		pks[k+npk].init();
 		pks[k+2*npk].init();
@@ -296,8 +304,9 @@ int main(){
 	im3.count();
 
 
-	int i,itr=3;
+	int i;
 	int npx=10, npy=10;
+	int itr=6;
 
 	im3.init_Pins(npx,npy);
 	for(int mtyp=1;mtyp<4;mtyp++){

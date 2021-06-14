@@ -38,6 +38,9 @@ Dom2D::Dom2D(char *fname){ //Contructor
 	fgets(cbff,128,fp);
 	fscanf(fp,"%lf %lf %d\n",yrec,yrec+1,&nry);
 
+	
+
+
 	fgets(cbff,128,fp);
 	int imprt;
 	char fngrn[128],fn1[128],fn2[128],fn3[128];
@@ -72,6 +75,7 @@ Dom2D::Dom2D(char *fname){ //Contructor
 	fd2.rho=1.0;
 	fd2.Xa=Xa;
 	fd2.Xb=Xb;
+
 
 
 	fclose(fp);
@@ -114,6 +118,23 @@ void Dom2D::set_wvfm(char fname[128]){
 	Nt=inwv.Nt;
 	dt=inwv.dt;
 	fd2.dt=dt;
+};
+void Dom2D::set_rec_array(char fn[128]){
+	FILE *fp=fopen(fn,"r");
+	int i,nary,npnt,idir;
+	double u1,u2,v12;
+	char cbff[128];
+	fgets(cbff,128,fp);
+	fscanf(fp,"%d\n",&nary);
+	fd2.init_rec_array(nary);
+	fgets(cbff,128,fp);
+	for(i=0;i<nary;i++){
+		fscanf(fp,"%d %lf %lf %lf %d\n",&idir,&u1,&u2,&v12,&npnt);
+		printf("%d %lf %lf %lf %d\n",idir,u1,u2,v12,npnt);
+		fd2.rary[i].set_fd_grid(Xa,dx[0],Ndiv,dt,Nt);
+		fd2.rary[i].set_array(idir,u1,u2,v12,npnt);
+	};
+	fclose(fp);
 };
 
 void Dom2D::set_recs(){

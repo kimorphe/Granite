@@ -161,7 +161,7 @@ void InWv::DFT(){
 #if DEBUG == 1
 
 int main(){
-	char fname[128]="inwv0.dat";
+	char fname[128]="inwv0.inp";
 	char fnout[128]="inwv.out";
 	InWv iwv;
 	iwv.setup(fname);

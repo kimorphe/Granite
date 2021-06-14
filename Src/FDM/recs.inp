@@ -1,0 +1,7 @@
+# nary (number of receiver array)
+ 4
+# idir, range[2], hgt, np 
+ 0 5.0 30.0  10.0 26
+ 0 5.0 30.0  11.0 26 
+ 1 5.0 30.0  25.0 26
+ 1 5.0 30.0  30.0 26

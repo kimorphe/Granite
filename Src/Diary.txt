@@ -309,5 +309,7 @@ ascan.cppとkw.pyの結果の違いについて
 	Model/clst.cpp --> initial pin location randamized
 	FDM/inwv0.inp, fdm.inp (Xa,Xb--> set to actual domain size)
 
-	
+	FDM/recs.cpp 追加 (receiver array class) --> bwv*.out --> bwv_aray.py
+		[] old rec class need to be removed 
 
+	inwv0.inp(nsig=3 --> nsig=4 修正)

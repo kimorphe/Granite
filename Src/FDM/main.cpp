@@ -34,11 +34,13 @@ int main(){
 	char finwv[128]="inwv0.inp"; // incident waveform 
 	char fgeom[128]="fdm.inp";   // general input
 	char fout[128]="kcell.dat";  // domain data output
+	char frec[128]="recs.inp";  // receiver array
 
 
 	Dom2D dom(fgeom);	// load general input & set computational domain 
 	dom.set_wvfm(finwv);	// set excitation(incident) waveform
 	dom.set_recs();
+	dom.set_rec_array(frec);
 
 /*
 	double xc[2],a,b;
@@ -89,7 +91,9 @@ int main(){
 			idat++;
 		}
 		dom.fd2.rec();	// record waveform data
+		dom.fd2.record();
 	};
 	dom.fd2.write_bwvs(fnwv);
+	dom.fd2.write_bwv_array();
 	return(0);
 };

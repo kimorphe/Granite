@@ -1,7 +1,7 @@
 all: fdm
 
-fdm:: domain.o main.o field.o inwv.o cpbank.o
-	g++ -o fdm domain.o main.o field.o inwv.o cpbank.o
+fdm:: domain.o main.o field.o inwv.o cpbank.o recs.o
+	g++ -o fdm domain.o main.o field.o inwv.o cpbank.o recs.o
 
 inwv.o: inwv.cpp
 	g++ -c inwv.cpp
@@ -14,4 +14,6 @@ main.o: main.cpp
 
 cpbank.o: cpbank.cpp
 	g++ -c cpbank.cpp
+recs.o: recs.cpp
+	g++ -c recs.cpp
 

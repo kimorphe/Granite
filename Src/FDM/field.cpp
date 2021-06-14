@@ -128,6 +128,7 @@ void Field::rec(){
 	}
 	}
 };
+
 void Field::write_bwvs(char *fn){
 	FILE *fp=fopen(fn,"w");
 	int i,j,k,nrec=nrx*nry;
@@ -158,6 +159,44 @@ void Field::write_bwvs(char *fn){
 	}
 	fclose(fp);
 };
+void Field::init_rec_array(int nn){
+	nary=nn;
+	rary=(rec_array *)malloc(sizeof(rec_array)*nary);
+};
+void Field::record(){
+	int i,j;
+	int iu,iv,ix,iy,jdat;
+	static int idat=0;
+	rec_array ele;
+	for(i=0;i<nary;i++){
+		ele=rary[i];
+		jdat=idat;
+	for(j=0;j<ele.npnt;j++){
+		iu=ele.irecs[j];
+		iv=ele.jrec;
+		ix=iu; iy=iv;
+		if(ele.idir==1){
+			ix=iv;iy=iu;
+		};
+		rary[i].v1[jdat]=v1[ix][iy];
+		rary[i].v2[jdat]=v2[ix][iy];
+		rary[i].s[jdat]=s[ix][iy];
+		jdat++;
+	}
+	};
+	idat=jdat;
+};
+void Field::write_bwv_array(){
+	int i;
+	char fname[128];
+	printf("Field::write_bwv_array::nary=%d\n",nary);
+	for(i=0;i<nary;i++){
+		sprintf(fname,"bwv%d.out",i);
+		printf("%s\n",fname);
+	       	rary[i].write2(fname);
+	}
+};
+
 void Field::out(int type, int num){
 	char fname[128];
 	FILE *fp;

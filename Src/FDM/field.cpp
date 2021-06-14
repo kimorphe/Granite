@@ -166,25 +166,27 @@ void Field::init_rec_array(int nn){
 void Field::record(){
 	int i,j;
 	int iu,iv,ix,iy,jdat;
-	static int idat=0;
-	rec_array ele;
+//	for(i=0;i<nary;i++) printf("npnt=%d\n",rary[i].npnt);
+
 	for(i=0;i<nary;i++){
-		ele=rary[i];
-		jdat=idat;
-	for(j=0;j<ele.npnt;j++){
-		iu=ele.irecs[j];
-		iv=ele.jrec;
-		ix=iu; iy=iv;
-		if(ele.idir==1){
-			ix=iv;iy=iu;
+		jdat=rary[i].cntr;
+	for(j=0;j<rary[i].npnt;j++){
+//		printf("jdat=%d\n",jdat);
+		iu=rary[i].irecs[j];
+		iv=rary[i].jrec;
+		ix=iu;
+		iy=iv;
+		if(rary[i].idir==1){
+			ix=iv;
+			iy=iu;
 		};
 		rary[i].v1[jdat]=v1[ix][iy];
 		rary[i].v2[jdat]=v2[ix][iy];
 		rary[i].s[jdat]=s[ix][iy];
 		jdat++;
 	}
+	rary[i].cntr=jdat;
 	};
-	idat=jdat;
 };
 void Field::write_bwv_array(){
 	int i;

@@ -11,7 +11,7 @@ void rec_array::set_fd_grid(double xa[2],double del, int ng[2], double dtau, int
 	Nt=nt;
 	dt=dtau;
 };
-void rec_array::set_array(int ixy, double u1, double u2, double vcod, int np){
+void rec_array::set_array( int ixy, double u1, double u2, double vcod, int np){
 	idir=ixy;
 	int i,iad;
 	double uu,du=0;
@@ -31,24 +31,32 @@ void rec_array::set_array(int ixy, double u1, double u2, double vcod, int np){
 		};
 		if(iad<0) continue;
 		irecs[npnt]=iad;
+//		printf("irecs=%d\n",irecs[npnt]);
 		npnt++;
 	};
 
-	if(idir==0) jrec=int((vcod-Xa[1])/dh);
-	if(idir==1) jrec=int((vcod-Xa[0])/dh);
+	if(idir==0){
+		jrec=int((vcod-Xa[1])/dh);
+		if(jrec>=Ndiv[1]) npnt=0;
+	}
+	if(idir==1){
+	       	jrec=int((vcod-Xa[0])/dh);
+		if(jrec>=Ndiv[0]) npnt=0;
+	}
 	if(jrec<0) npnt=0;
-	if(jrec>=Ndiv[1]) npnt=0;
+	printf("jrec=%d npnt=%d\n",jrec,npnt);
+	printf("Ndiv==%d %d\n",Ndiv[0],Ndiv[1]);
 
 	v1=(double *)malloc(sizeof(double)*npnt*Nt);
 	v2=(double *)malloc(sizeof(double)*npnt*Nt);
 	s=(double *)malloc(sizeof(double)*npnt*Nt);
 
+	cntr=0;
 };
 void rec_array::write2(char fn[128]){
 	FILE *fp=fopen(fn,"w");
 	int i,j,jd;
 
-	if(idir==0);
 	double xx,yy;
 	fprintf(fp,"# idir(0:x-aligned, 1:y-alinged\n");
 	fprintf(fp,"%d\n",idir);

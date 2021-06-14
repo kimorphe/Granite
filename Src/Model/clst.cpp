@@ -65,7 +65,7 @@ class IMG{
 	protected:
 };
 int IMG::ipix(int k){
-	return(int(k/Ndiv[0]));
+	return(int(k/Ndiv[1]));
 };
 int IMG::jpix(int k){
 	return(int(k%Ndiv[1]));
@@ -305,7 +305,7 @@ int main(){
 
 
 	int i;
-	int npx=10, npy=10;
+	int npx=20, npy=10;
 	int itr=6;
 
 	im3.init_Pins(npx,npy);

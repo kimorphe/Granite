@@ -25,7 +25,9 @@ class Mmap:
         self.M=M
         fp.close()
     def show(self,ax,nclr=7):
-        ax.imshow(np.mod(self.M,nclr),aspect=1.0,cmap="hot",vmin=0,vmax=nclr-1)
+        print(np.shape(self.M))
+        ax.imshow(np.mod(self.M,nclr),aspect="equal",cmap="hot",vmin=0,vmax=nclr-1,origin="lower")
+        #ax.imshow(self.M,aspect="equal",cmap="hot",origin="lower")
 
 
 if __name__=="__main__":

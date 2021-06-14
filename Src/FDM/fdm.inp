@@ -1,8 +1,8 @@
 #Xa,Xb
 0.0 0.0
-33.0 33.0
+50.0 30.0
 #Ndiv[2]
-600 600
+910 546
 # B.C ( 0: stress free, 1: perioic)
  1
 # xrec[0:1],nrx (receiver grid (x))

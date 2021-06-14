@@ -1,10 +1,10 @@
 # type (1:sine, 2:cosine)
  2
 # Nt
- 2000
+ 5000
 # T0,nbrst
  1.0 3
 # nsig
  4
 # t1,t2
- 0.0 10.0
+ 0.0 20.0

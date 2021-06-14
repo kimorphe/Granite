@@ -1,14 +1,21 @@
 class rec_array{
 	public:
-		double Xa[2],dh,dt;	// FD grid 
-		int Ndiv[2],Nt;
+		double Xa[2];
+		double dh;
+		double dt;	// FD grid 
+		int Ndiv[2];
+		int Nt;
 		int idir;	// alignement 0:x-axis, 1:yaxis
 		int npnt;	// number of points
-		int *irecs,jrec;// index list
+		int *irecs;
+		int jrec;// index list
 		void set_array(int ixy, double u1, double u2, double v12, int np);
 		void write2(char fn[128]);
 		void set_fd_grid(double xa[2],double del, int ng[2], double dtau, int nt );
-		double *v1,*v2,*s;
+		double *v1;
+		double *v2;
+		double *s;
+		int cntr;
 	private:
 	protected:
 };

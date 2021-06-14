@@ -232,6 +232,9 @@ if __name__=="__main__":
     Xb=[1000,1000]
     Xa=[300,300]
     Xb=[900,900]
+    Xa=[ 145,327]
+    Xb=[1055,873]
+
     img.draw_rect(ax,Xa,Xb)
     img.trim(Xa,Xb)
 

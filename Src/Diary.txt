@@ -313,3 +313,8 @@ ascan.cppとkw.pyの結果の違いについて
 		[] old rec class need to be removed 
 
 	inwv0.inp(nsig=3 --> nsig=4 修正)
+
+	Ndiv[0]/=Ndiv[1]のケースでいくつかの誤りを発見、修正
+	注意：分割コンパイルの際、headerファイルの情報が反映されていないと、メモリを動的に確保した際に
+	誤ったアドレスが参照される。このことに気がつかず、recs.cppとfield.cppの連携不具合に起因した
+	error検出に非常に労力がいった。

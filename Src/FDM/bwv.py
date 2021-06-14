@@ -32,8 +32,8 @@ fig=plt.figure()
 ax=fig.add_subplot(111)
 
 v1=[]; v2=[]; s=[]
-#Nx=nry*nrx;
-Nx=nry;
+Nx=nry*nrx;
+#Nx=nry;
 for m in range(Nx):
     for k in range(Nt):
         dat=fp.readline().strip().split(",")

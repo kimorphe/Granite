@@ -39,7 +39,7 @@ int main(){
 
 	Dom2D dom(fgeom);	// load general input & set computational domain 
 	dom.set_wvfm(finwv);	// set excitation(incident) waveform
-	dom.set_recs();
+//	dom.set_recs();
 	dom.set_rec_array(frec);
 
 /*
@@ -83,17 +83,17 @@ int main(){
 		dom.fd2.v2s();  // velocity --> stress
 		if(dom.bc==1) dom.fd2.periodicBC(); // periodic BC
 		amp=dom.inwv.get_amp(i); // get incident wave amplitude
-		dom.fd2.apply_Bcon(amp); // stress BC
+		dom.fd2.apply_Bcon(-amp); // stress BC
 		if(i%100==0){
 			printf("i=%d (%d)\n",i,idat);
 			dom.fd2.out(0,idat);
 			dom.fd2.out(1,idat);
 			idat++;
 		}
-		dom.fd2.rec();	// record waveform data
+//	 	 dom.fd2.rec();	// record waveform data
 		dom.fd2.record();
 	};
-	dom.fd2.write_bwvs(fnwv);
+//	dom.fd2.write_bwvs(fnwv);
 	dom.fd2.write_bwv_array();
 	return(0);
 };

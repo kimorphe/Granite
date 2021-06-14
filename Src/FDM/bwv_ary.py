@@ -26,7 +26,7 @@ class Bwv:
             dat=fp.readline().strip().split(",")
             xf=float(dat[0]);
             yf=float(dat[1]);
-            print(xf,yf)
+            #print(xf,yf)
 
             xcod.append(xf)
             ycod.append(yf)
@@ -74,7 +74,15 @@ if __name__=="__main__":
     ax=fig.add_subplot(111)
 
     bwv0=Bwv()
-    bwv0.load("bwv0.out")
+    bwv0.load("bwv3.out")
     bwv0.show(ax)
+
+
+    fig2=plt.figure()
+    ax2=fig2.add_subplot(111)
+    ax2.plot(bwv0.time,bwv0.v1[0,:])
+    ax2.plot(bwv0.time,bwv0.v1[20,:])
+    ax2.plot(bwv0.time,bwv0.v1[-1,:])
+    ax2.grid(True)
     plt.show()
 

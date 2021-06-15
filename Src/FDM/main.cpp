@@ -24,7 +24,13 @@ double cp_gen(int num){
 
 	return(cp);
 };
-int main(){
+int main(int argc, char *argv[]){
+
+	int seed=-1;
+	if(argc>1){
+		sscanf(argv[1],"%d",&seed);
+	}
+	//printf("seed=%d\n",seed);
 	//std::random_device seed;
 	std::mt19937 engine(-1);
 	std::uniform_real_distribution<> urnd(0,1.0);
@@ -37,10 +43,11 @@ int main(){
 	char frec[128]="recs.inp";  // receiver array
 
 
-	Dom2D dom(fgeom);	// load general input & set computational domain 
+	Dom2D dom(fgeom,seed);	// load general input & set computational domain 
 	dom.set_wvfm(finwv);	// set excitation(incident) waveform
 //	dom.set_recs();
 	dom.set_rec_array(frec);
+	dom.fd2.init_mean_fld();
 
 /*
 	double xc[2],a,b;
@@ -73,6 +80,7 @@ int main(){
 	dom.set_cplim();
 	//dom.fd2.out(1);
 	dom.CFL();
+//	dom.fd2.write_mean_fld();
 
 	char fnwv[128]="bwv.out";
 	double amp;
@@ -92,8 +100,10 @@ int main(){
 		}
 //	 	 dom.fd2.rec();	// record waveform data
 		dom.fd2.record();
+		dom.fd2.stack(i);
 	};
 //	dom.fd2.write_bwvs(fnwv);
 	dom.fd2.write_bwv_array();
+	dom.fd2.write_mean_fld();
 	return(0);
 };

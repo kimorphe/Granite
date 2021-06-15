@@ -83,6 +83,7 @@ void Field::mem_alloc(){
 	for(i=0;i<Nv[0];i++) v2[i]=ptmp+i*Nv[1];
 
 };
+/*
 void Field::mem_alloc_wvs(int nrx,int nry, int nt){
 	int ndat=nrx*nry*nt;
 	swv=(double *)malloc(sizeof(double)*ndat);
@@ -159,6 +160,7 @@ void Field::write_bwvs(char *fn){
 	}
 	fclose(fp);
 };
+*/
 void Field::init_rec_array(int nn){
 	nary=nn;
 	rary=(rec_array *)malloc(sizeof(rec_array)*nary);
@@ -188,6 +190,7 @@ void Field::record(){
 	rary[i].cntr=jdat;
 	};
 };
+
 void Field::write_bwv_array(){
 	int i;
 	char fname[128];
@@ -233,4 +236,99 @@ void Field::out(int type, int num){
 		}
 		fclose(fp);
 	}
+};
+
+void Field::init_mean_fld(){
+	double *ptmp;
+	int nv=(Ndiv[0]-1)*Nt;
+
+	int i;
+	ptmp=(double *)malloc(sizeof(double)*nv);
+	V1t=(double **)malloc(sizeof(double*)*(Ndiv[0]-1));
+	for(i=0;i<nv;i++) ptmp[i]=0.0;
+	for(i=0;i<Ndiv[0]-1;i++) V1t[i]=ptmp+i*Nt;
+
+	ptmp=(double *)malloc(sizeof(double)*nv);
+	V2t=(double **)malloc(sizeof(double*)*(Ndiv[0]-1));
+	for(i=0;i<nv;i++) ptmp[i]=0.0;
+	for(i=0;i<Ndiv[0]-1;i++) V2t[i]=ptmp+i*Nt;
+
+	int ns=Ndiv[0]*Nt;
+	ptmp=(double *)malloc(sizeof(double)*ns);
+	St=(double **)malloc(sizeof(double*)*(Ndiv[0]));
+	for(i=0;i<ns;i++) ptmp[i]=0.0;
+	for(i=0;i<Ndiv[0];i++) St[i]=ptmp+i*Nt;
+
+};
+
+void Field::stack(int kt){
+	int i,j;
+	int Ngx=Ndiv[0]-1;
+	int Ngy=Ndiv[1]-1;
+	for(i=0;i<Ngx;i++){
+		for(j=0;j<Ngy;j++){
+			V1t[i][kt]+=v1[i][j];
+			V2t[i][kt]+=v2[i][j];
+		}
+		V1t[i][kt]/=Ngy;
+		V2t[i][kt]/=Ngy;
+	}
+
+	for(i=0;i<Ndiv[0];i++){
+		for(j=0;j<Ndiv[1];j++){
+			St[i][kt]+=s[i][j];
+		}
+		St[i][kt]/=Ndiv[1];
+	}
+
+};
+
+void Field::write_mean_fld(){
+
+	char fn1[128]="v1stk.out";
+	char fn2[128]="v2stk.out";
+	char fn3[128]="sstk.out";
+
+	FILE *fp1,*fp2,*fp3;
+
+	fp1=fopen(fn1,"w");
+	fp2=fopen(fn2,"w");
+	fp3=fopen(fn3,"w");
+	int i,j;
+	int Ngx=Ndiv[0]-1;
+	int Ngy=Ndiv[1]-1;
+
+	fprintf(fp1,"# Xa,dx,Nx\n");
+	fprintf(fp2,"# Xa,dx,Nx\n");
+	fprintf(fp3,"# Xa,dx,Nx\n");
+	fprintf(fp1,"%lf, %lf, %d\n",Xa[0]+0.5*dh,dh,Ngx);
+	fprintf(fp2,"%lf, %lf, %d\n",Xa[0]+0.5*dh,dh,Ngx);
+	fprintf(fp3,"%lf, %lf, %d\n",Xa[0],dh,Ndiv[0]);
+	fprintf(fp1,"# dt, Nt\n");
+	fprintf(fp2,"# dt, Nt\n");
+	fprintf(fp3,"# dt, Nt\n");
+	fprintf(fp1,"%lf, %d\n",dt,Nt);
+	fprintf(fp2,"%lf, %d\n",dt,Nt);
+	fprintf(fp3,"%lf, %d\n",dt,Nt);
+	fprintf(fp1,"# v1_stacked\n");
+	fprintf(fp2,"# v2_stacked\n");
+	fprintf(fp3,"# s_stacked\n");
+
+	for(i=0;i<Ngx;i++){
+		for(j=0;j<Nt;j++){
+			fprintf(fp1,"%lf\n",V1t[i][j]);
+			fprintf(fp2,"%le\n",V2t[i][j]);
+		}
+	}
+
+	for(i=0;i<Ndiv[0];i++){
+		for(j=0;j<Nt;j++){
+			fprintf(fp3,"%lf\n",St[i][j]);
+		}
+	}
+
+	fclose(fp1);
+	fclose(fp2);
+	fclose(fp3);
+
 };

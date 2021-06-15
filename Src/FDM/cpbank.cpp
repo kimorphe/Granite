@@ -92,6 +92,24 @@ int cp_list::retain(double f1, double f2){
 
 };
 
+double cp_list::stats(){
+	int i;
+	double cp1=0.0;
+	double cp2=0.0;
+	double dat;
+	for(i=0;i<ndat;i++){
+		dat=cp_bank[i];
+		cp1+=dat;
+		cp2+=(dat*dat);
+	};
+	cp_mean=cp1/ndat;
+	cp_var=cp2/ndat-cp_mean*cp_mean;;
+	//printf("%s\n",fname);
+	//printf("<cp>=%lf, ",cp_mean);
+	//printf("var{cp}=%lf, ",cp_var);
+	//printf("std{cp}=%lf\n",sqrt(cp_var));
+	return(cp2);
+};
 void cp_list::read_all(){
 	int i,j;
 
@@ -132,6 +150,25 @@ int main(){
 	cK.load(fn2);
 	cNa.load(fn3);
 	//cQt.print_cp_bank();
+	double c2Q, c2K, c2N;
+	c2Q=cQt.stats();
+	c2K=cK.stats();
+	c2N=cNa.stats();
+
+	double c_mean,c_var;
+	c_mean =cQt.cp_mean*cQt.ndat;
+	c_mean+= cK.cp_mean*cK.ndat;
+	c_mean+=cNa.cp_mean*cNa.ndat;
+
+	double c2;
+	c2=c2Q+c2K+c2N;
+	int ndat;
+	ndat=cQt.ndat+cK.ndat+cNa.ndat;
+	c_mean/=ndat;
+	c_var=c2/ndat-c_mean*c_mean;
+	printf("c_mean=%lf, var{c}=%lf, std{c}=,%lf\n",c_mean,c_var,sqrt(c_var));
+
+
 	return(0);
 };
 #endif

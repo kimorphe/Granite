@@ -54,7 +54,7 @@ class IMG{
 		int jpix(int k);
 		Pin *pks;
 		int npk;
-		void init_Pins(int n, int m);
+		void init_Pins(int n, int m,int seed);
 		void cluster(int mtyp);
 		void write_Pins(int i,int mtyp);
 		int find_Pin(int ix, int iy, int mtyp);
@@ -158,8 +158,8 @@ void IMG::cluster(int mtyp){
 	};
 
 };
-void IMG::init_Pins(int n, int m){
-	std::mt19937 engine(-1);
+void IMG::init_Pins(int n, int m, int seed){
+	std::mt19937 engine(seed);
 	std::uniform_real_distribution<> urnd(0,1.0);
 
 	npk=n*m;
@@ -296,7 +296,12 @@ int IMG::count(){
 	return(npix);
 };
 //-------------------------------------------------------
-int main(){
+int main(int argc, char *argv[]){
+	int seed=-1;
+	if(argc >1){
+		sscanf(argv[1],"%d",&seed);
+	};
+	//printf("seed=%d\n",seed);
 	char fname[128]="minmap.out";
 
 	IMG im3;
@@ -308,7 +313,7 @@ int main(){
 	int npx=20, npy=10;
 	int itr=6;
 
-	im3.init_Pins(npx,npy);
+	im3.init_Pins(npx,npy,seed);
 	for(int mtyp=1;mtyp<4;mtyp++){
 		im3.write_Pins(0,mtyp);
 		for(i=0;i<itr;i++){

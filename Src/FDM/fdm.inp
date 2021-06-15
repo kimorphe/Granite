@@ -5,13 +5,11 @@
 910 546
 # B.C ( 0: stress free, 1: perioic)
  1
-# xrec[0:1],nrx (receiver grid (x))
- 20.0 25.0 2
-# yrec[0:1],nry (receiver grid (y))
- 5.0 25.0 41
 #import cell data ( 1:yes, 0:No)
  1
 ../Model/grain.out
 ../../PPT_Figs/phi_Qt.out
 ../../PPT_Figs/phi_K.out
 ../../PPT_Figs/phi_Na.out
+# PDF[cp] (0: measured, 1: Gaussian)
+ 0

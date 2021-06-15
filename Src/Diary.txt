@@ -282,7 +282,7 @@ ascan.cppとkw.pyの結果の違いについて
 	[v]応力境界か周期境界か？
 	[未]単結晶音速データでの計算
 	[未,v]結晶粒の数の妥当性,結晶粒初期位置のrandamize
-	[未]vfld.pyの効率化
+	[v]vfld.pyの効率化
 
 	各種プログラムの機能、実行
 	Src/Model/img2.py  --> minmap.out
@@ -318,3 +318,16 @@ ascan.cppとkw.pyの結果の違いについて
 	注意：分割コンパイルの際、headerファイルの情報が反映されていないと、メモリを動的に確保した際に
 	誤ったアドレスが参照される。このことに気がつかず、recs.cppとfield.cppの連携不具合に起因した
 	error検出に非常に労力がいった。
+
+2021/6/15(Tue)
+	Model/clst.cpp, FDM/main.cp 	
+	ともに、main(int argc, char *argv[])argvでseed設定できるように修正
+
+	平均波形B-scanの出力　FDM/v1stk.out --> meanwv.py で可視化--> B-scan plot, F-X plot, F-K, plotも表示
+	音速をGuass分布に従って与える機能を追加(fdm.inp内のigss=0/1で切り替え)
+	Guass分布の標準偏差が小さいと散乱減衰は非常に小さい（最初、間違えて分散を与えて計算して糠喜び）
+	cpbank.cpp --> 平均、標準偏差、分散を計算する機能を追加
+
+	DATAフォルダから計算を実行：
+	周波数毎の距離減衰曲線を描く-->Gaussiaと計測した速度分布で異なる挙動になりそう。 	
+

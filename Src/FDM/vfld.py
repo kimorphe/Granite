@@ -5,21 +5,19 @@ class vfld:
 
     def load(self,num):
         fname="v"+str(num)+".out"
+        print(fname)
         fp=open(fname,"r");
 
         fp.readline()
         dat=fp.readline().strip(); dat=dat.split(",")
         Xa=[float(dat[0]),float(dat[1])]
         Xb=[float(dat[2]),float(dat[3])]
-        print(Xa)
-        print(Xb)
 
         fp.readline()
         dat=fp.readline().strip(); dat=dat.split(",")
         Ndiv=[int(dat[0]),int(dat[1])]
         fp.readline()
 
-        print("Ndiv=",Ndiv)
         vx=[]; vy=[];
         for row in fp:
             dat=row.strip().split(",")
@@ -42,7 +40,8 @@ class vfld:
         Xb=self.Xb
         ext=[Xa[0],Xb[0],Xa[1],Xb[1]]
         Z=np.abs(self.vx*self.vx+self.vy*self.vy)
-        ax.imshow(Z,extent=ext,cmap="jet",origin="lower",interpolation="bilinear",vmin=v1,vmax=v2)
+        im=ax.imshow(Z,extent=ext,cmap="jet",origin="lower",interpolation="bilinear",vmin=v1,vmax=v2)
+        return(im)
 
 
 if __name__=="__main__":
@@ -54,10 +53,12 @@ if __name__=="__main__":
 
 
     nums=np.array(range(20))
+    nums=np.arange(0,50,1).astype(int)
 
     for num in nums:
         vf.load(num)
         vf.show_v(ax)
         fout="v"+str(num)+".png"
         fig.savefig(fout,bbox_inches="tight")
+        ax.cla()
     #plt.show()

@@ -22,30 +22,27 @@ void rec_array::set_array( int ixy, double u1, double u2, double vcod, int np){
 		uu=u1+i*du;
 		if(idir==0){
 			iad=int((uu-Xa[0])/dh);
-			if(iad>=Ndiv[0]) continue;
+			if(iad>=Ndiv[0]-1) continue;
 		}
 
 		if(idir==1){
 			iad=int((uu-Xa[1])/dh);
-			if(iad>=Ndiv[1]) continue;
+			if(iad>=Ndiv[1]-1) continue;
 		};
 		if(iad<0) continue;
 		irecs[npnt]=iad;
-//		printf("irecs=%d\n",irecs[npnt]);
 		npnt++;
 	};
 
 	if(idir==0){
 		jrec=int((vcod-Xa[1])/dh);
-		if(jrec>=Ndiv[1]) npnt=0;
+		if(jrec>=Ndiv[1]-1) npnt=0;
 	}
 	if(idir==1){
 	       	jrec=int((vcod-Xa[0])/dh);
-		if(jrec>=Ndiv[0]) npnt=0;
+		if(jrec>=Ndiv[0]-1) npnt=0;
 	}
 	if(jrec<0) npnt=0;
-	printf("jrec=%d npnt=%d\n",jrec,npnt);
-	printf("Ndiv==%d %d\n",Ndiv[0],Ndiv[1]);
 
 	v1=(double *)malloc(sizeof(double)*npnt*Nt);
 	v2=(double *)malloc(sizeof(double)*npnt*Nt);

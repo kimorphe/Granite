@@ -14,7 +14,7 @@ void show_msg_quit(char fn[128]){
 	exit(-1);
 };
 //  ---------CONSTRUCTOR -----------
-Dom2D::Dom2D(char *fname){ //Contructor
+Dom2D::Dom2D(char *fname, int seed){ //Contructor
 
 	int i,j,ndim=2;
 	FILE *fp,*fg;
@@ -33,12 +33,13 @@ Dom2D::Dom2D(char *fname){ //Contructor
 	fscanf(fp,"%d %d\n",Ndiv,Ndiv+1);
 	fgets(cbff,128,fp);
 	fscanf(fp,"%d\n",&bc);
+	/*
 	fgets(cbff,128,fp);
 	fscanf(fp,"%lf %lf %d\n",xrec,xrec+1,&nrx);
 	fgets(cbff,128,fp);
 	fscanf(fp,"%lf %lf %d\n",yrec,yrec+1,&nry);
 
-	
+*/	
 
 
 	fgets(cbff,128,fp);
@@ -62,10 +63,12 @@ Dom2D::Dom2D(char *fname){ //Contructor
 		fscanf(fp,"%s\n",fn1);
 		fscanf(fp,"%s\n",fn2);
 		fscanf(fp,"%s\n",fn3);
+		fgets(cbff,128,fp);
+		fscanf(fp,"%d\n",&igss);
 	};
 
-	dx[0]=(Xb[0]-Xa[0])/Ndiv[0];
-	dx[1]=(Xb[1]-Xa[1])/Ndiv[1];
+	dx[0]=(Xb[0]-Xa[0])/(Ndiv[0]-1);
+	dx[1]=(Xb[1]-Xa[1])/(Ndiv[1]-1);
 
 	Wd[0]=Xb[0]-Xa[0];
 	Wd[1]=Xb[1]-Xa[1];
@@ -90,20 +93,43 @@ Dom2D::Dom2D(char *fname){ //Contructor
 	cK.load(fn2);
 	cNa.load(fn3);
 
-	std::mt19937 engine(-1);
-	std::uniform_real_distribution<> urnd(0,1.0);
+	int ncdat;
+	double c2Q, c2K, c2N;
+	double c2,c_mean,c_var,c_std;
+	c2Q=cQt.stats();
+	c2K=cK.stats();
+	c2N=cNa.stats();
+	c_mean =cQt.cp_mean*cQt.ndat;
+	c_mean+= cK.cp_mean*cK.ndat;
+	c_mean+=cNa.cp_mean*cNa.ndat;
+	c2=c2Q+c2K+c2N;
+	ncdat=cQt.ndat+cK.ndat+cNa.ndat;
+	c_mean/=ncdat;
+	c_var=c2/ncdat-c_mean*c_mean;
+	c_std=sqrt(c_var);
+	printf("c_mean=%lf, var{c}=%lf, std{c}=,%lf\n",c_mean,c_var,sqrt(c_var));
+
+	std::mt19937 engine(seed);
+
 	int m;
-	for(i=0;i<ngrain;i++){
-		m=int(urnd(engine)*cQt.ndat);
-		cp1d[i]=cQt.cp_bank[m];
+	if(igss==0){
+		std::uniform_real_distribution<> urnd(0,1.0);
+		for(i=0;i<ngrain;i++){
+			m=int(urnd(engine)*cQt.ndat);
+			cp1d[i]=cQt.cp_bank[m];
 
-		m=int(urnd(engine)*cK.ndat);
-		cp1d[i+ngrain]=cK.cp_bank[m];
+			m=int(urnd(engine)*cK.ndat);
+			cp1d[i+ngrain]=cK.cp_bank[m];
 
-		m=int(urnd(engine)*cNa.ndat);
-		cp1d[i+ngrain*2]=cNa.cp_bank[m];
-
-//		printf("%lf, %lf, %lf\n",cp1d[i],cp1d[i+ngrain],cp1d[i+2*ngrain]);
+			m=int(urnd(engine)*cNa.ndat);
+			cp1d[i+ngrain*2]=cNa.cp_bank[m];
+		};
+	}
+	if(igss==1){
+		std::normal_distribution<> Gss(c_mean,c_std);
+		for(i=0;i<3*ngrain;i++){
+			cp1d[i]=Gss(engine);
+		}
 	};
 
 	for(i=0;i<Ndiv[0];i++){
@@ -118,6 +144,7 @@ void Dom2D::set_wvfm(char fname[128]){
 	Nt=inwv.Nt;
 	dt=inwv.dt;
 	fd2.dt=dt;
+	fd2.Nt=Nt;
 };
 void Dom2D::set_rec_array(char fn[128]){
 	FILE *fp=fopen(fn,"r");
@@ -130,18 +157,19 @@ void Dom2D::set_rec_array(char fn[128]){
 	fgets(cbff,128,fp);
 	for(i=0;i<nary;i++){
 		fscanf(fp,"%d %lf %lf %lf %d\n",&idir,&u1,&u2,&v12,&npnt);
-		printf("%d %lf %lf %lf %d\n",idir,u1,u2,v12,npnt);
+	//	printf("%d %lf %lf %lf %d\n",idir,u1,u2,v12,npnt);
 		fd2.rary[i].set_fd_grid(Xa,dx[0],Ndiv,dt,Nt);
 		fd2.rary[i].set_array(idir,u1,u2,v12,npnt);
 	};
 	fclose(fp);
 };
-
+/*
 void Dom2D::set_recs(){
 	fd2.set_xrec(xrec,nrx);
 	fd2.set_yrec(yrec,nry);
 	fd2.mem_alloc_wvs(nrx,nry,Nt);
 };
+*/
 
 //  ----------- MEMORY ALLOCATION --------------
 void Dom2D::mem_alloc(){

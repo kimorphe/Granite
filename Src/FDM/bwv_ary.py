@@ -74,7 +74,7 @@ if __name__=="__main__":
     ax=fig.add_subplot(111)
 
     bwv0=Bwv()
-    bwv0.load("bwv3.out")
+    bwv0.load("bwv1.out")
     bwv0.show(ax)
 
 

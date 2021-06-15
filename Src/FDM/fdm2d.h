@@ -29,6 +29,8 @@ class cp_list{
 		int nf1,nf2;
 		double *cp_bank,*freq;
 		void print_cp_bank();
+		double cp_mean,cp_var;
+		double stats();
 	private:
 		void read_header();
 		void read_all();
@@ -81,15 +83,17 @@ class InWv{
 class Field{
 	public:
 		double **s,**v1,**v2;
-		double *swv, *v1wv, * v2wv;
-		int *irecx,*irecy,iwv;
+		double **St,**V1t,**V2t;
 		int Nt;
-		void rec();
-		void mem_alloc_wvs(int nx, int ny, int nt);
-		void set_xrec(double xrc[2], int nx);
-		void set_yrec(double yrc[2], int ny);
-		int nrx,nry;
-		void write_bwvs(char *fn);
+//		double *swv, *v1wv, * v2wv;
+//		int *irecx,*irecy,iwv;
+//		void rec(); #
+//		void mem_alloc_wvs(int nx, int ny, int nt);
+//		void set_xrec(double xrc[2], int nx);
+//		void set_yrec(double yrc[2], int ny);
+//		int nrx,nry;
+//		void write_bwvs(char *fn);
+//		void set_rec_arrays(int nary);
 		void init(int ndiv[2]);
 		double dh,dt,rho;
 		double *Xa,*Xb;
@@ -100,12 +104,15 @@ class Field{
 		void periodicBC();
 		void apply_Bcon(double a);
 		void out(int type, int num);
-		rec_array *rary;
-		int nary;
-		//void set_rec_arrays(int nary);
-		void init_rec_array(int nn);
-		void record();
-		void write_bwv_array();
+		rec_array *rary;	// receiver arrays
+		int nary;		// number of receiver arrays
+		void init_rec_array(int nn);	// setup receiver array
+		void record();		// record array data
+		void write_bwv_array();	// write array measured waveforms to files
+
+		void init_mean_fld();
+		void stack(int kt);
+		void write_mean_fld();
 	private:
 		void mem_alloc();
 	protected:
@@ -148,6 +155,7 @@ class Dom2D{
 		int ngrain;
 		double **cp;
 		double cmin,cmax;
+		int igss;	// 0: measured PDF[cp], 1: Gaussian
 		void set_cplim();
 		void perfo(char *fn);
 		void perfo_ellip(char *fn);
@@ -157,15 +165,15 @@ class Dom2D{
 		void polygon(char *fn);
 		void out_kcell();
 		void out_cp();
-		Dom2D(char *fname);
+		Dom2D(char *fname,int seed);
 		void CFL();
 		void gridNum(int ityp);
 		void set_wvfm(char fn[128]);
-		void set_recs();
+//		void set_recs();
 		InWv inwv;
 		cp_list cQt, cK, cNa;
-		double xrec[2],yrec[2];
-		int nrx,nry;
+//		double xrec[2],yrec[2];
+//		int nrx,nry;
 		void set_rec_array(char fn[128]);
 	private:
 		void mem_alloc();

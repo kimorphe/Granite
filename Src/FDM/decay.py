@@ -45,16 +45,17 @@ class Bmean:
         ext=[time[0],time[-1],xcod[0],xcod[-1]]
         im=ax.imshow(Z,extent=ext,cmap="jet",origin="lower",aspect="auto",vmin=-0.15,vmax=0.15)
         return(im)
-    def FFT(self,bx):
+    def FFT(self,bx="",show=True):
         self.Amp=np.fft.fft(self.amp,axis=1)
         self.df=1/self.time[-1];
         self.freq=np.array(range(self.Nt))*self.df
         freq=self.freq
         xcod=self.xcod
         ext=[freq[0],freq[-1],xcod[0],xcod[-1]]
-        im=bx.imshow(np.abs(self.Amp*self.Amp),extent=ext,cmap="jet",origin="lower",aspect="auto",interpolation="bilinear",vmin=0,vmax=500)
-        bx.set_xlim([0,3])
-        return(im)
+        if show:
+            im=bx.imshow(np.abs(self.Amp*self.Amp),extent=ext,cmap="jet",origin="lower",aspect="auto",interpolation="bilinear",vmin=0,vmax=500)
+            bx.set_xlim([0,3])
+            return(im)
     def kfplot(self,ax):
         self.Amp=np.fft.fft(self.amp,axis=1)
         self.AMP=np.fft.ifft(self.Amp,axis=0)
@@ -72,48 +73,68 @@ class Bmean:
 
     def max_amp(self):
         self.amax=np.max(self.amp,axis=1)
+        indx=np.argmax(self.amp,axis=1)
+        self.tmax=self.time[indx]
+    def min_amp(self):
+        self.amin=np.min(self.amp,axis=1)
+        indx=np.argmin(self.amp,axis=1)
+        self.tmin=self.time[indx]
 
     def get_Amp(self,freq):
         num=np.argmin(np.abs(freq-self.freq))
-        return(np.abs(self.Amp[:,num]))
+        return((self.Amp[:,num]))
 
 
 if __name__=="__main__":
 
-    fname="v1stk.out"
-    #fname="sstk.out"
     bwv=Bmean()
-    bwv.load(fname)
 
-    fig=plt.figure()
-    ax=fig.add_subplot(111)
-    #bwv.Win(1.5,10.6,2.0); 
-    bwv.Win(1.6,11,1.5);
-    im=bwv.show(ax)
+    fname="v1stk.out"
 
-    fig2=plt.figure()
-    bx=fig2.add_subplot(111)
-    im=bwv.FFT(bx)
-    plt.colorbar(im)
-
-    fig3=plt.figure()
-    cx=fig3.add_subplot(111)
-    cx.grid(True)
-    bwv.max_amp()
-    cx.plot(bwv.xcod,bwv.amax)
-
-    fig4=plt.figure()
-    dx=fig4.add_subplot(111)
-    bwv.kfplot(dx)
+    #fig=plt.figure()
+    #bx=fig.add_subplot(111)
 
     fig5=plt.figure()
     ex=fig5.add_subplot(111)
-    #freqs=[0.6,0.8,1.0,1.2,1.4]
     freqs=[1.0]
-    for frq in freqs:
-        Amp=bwv.get_Amp(frq)
-        ex.plot(bwv.xcod, Amp)
     ex.grid(True)
 
+    DIR="Gss"
+    DIR="DAT"
+    nums=[1,2,3,4,5,6,7,8,9,10]
+    isum=0
+    for num in nums:
+    #for dir_name in dircs:
+        fn=DIR+str(num)+"/"+fname
+        bwv.load(fn)
+        print(fn)
+
+        bwv.min_amp()
+        t1=bwv.tmin[0]; 
+        t2=bwv.tmin[-1];
+        print("t1=",t1)
+        print("t2=",t2)
+        #bwv.show(bx)
+        #bx.plot(bwv.tmin,bwv.xcod)
+        bwv.Win(t1,t2,1.0); 
+        bwv.FFT(bx="",show=False)
+
+        for frq in freqs:
+            Amp=bwv.get_Amp(frq)
+            ex.plot(bwv.xcod, np.abs(Amp))
+
+            if isum==0:
+                Asum=np.zeros(len(Amp))*1j
+            Asum+=Amp;
+            isum+=1
+
+    Asum/=isum;
+    ex.plot(bwv.xcod,np.abs(Asum),"k-",linewidth=3)
+
+    fp=open(DIR+"_decay.out","w")
+    for k in range(len(Asum)):
+        dat=str(bwv.xcod[k])+", "+str(np.abs(Asum[k]))+"\n"
+        fp.write(dat)
+    fp.close()
     plt.show()
 

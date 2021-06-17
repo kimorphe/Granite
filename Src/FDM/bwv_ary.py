@@ -67,6 +67,16 @@ class Bwv:
             ext=[time[0],time[-1],ycod[0],ycod[-1]]
         ax.imshow(self.v1,extent=ext,origin="lower",cmap="jet",interpolation="bilinear")
         ax.set_aspect("auto")
+    def get_tmax(self):
+
+        #for k in range(self.npnt)
+        indx=np.argmin((self.v1),axis=1)
+
+        tmax=self.time[indx]
+        self.tmax=tmax
+        return(tmax)
+
+        
 
 if __name__=="__main__":
 
@@ -74,8 +84,9 @@ if __name__=="__main__":
     ax=fig.add_subplot(111)
 
     bwv0=Bwv()
-    bwv0.load("bwv1.out")
+    bwv0.load("bwv5.out")
     bwv0.show(ax)
+    bwv0.get_tmax()
 
 
     fig2=plt.figure()
@@ -84,5 +95,10 @@ if __name__=="__main__":
     ax2.plot(bwv0.time,bwv0.v1[20,:])
     ax2.plot(bwv0.time,bwv0.v1[-1,:])
     ax2.grid(True)
+
+
+    fig3=plt.figure()
+    bx=fig3.add_subplot(111)
+    bx.plot(bwv0.ycod,bwv0.tmax,"o",markersize=4,markerfacecolor="k")
     plt.show()
 

@@ -104,10 +104,10 @@ double cp_list::stats(){
 	};
 	cp_mean=cp1/ndat;
 	cp_var=cp2/ndat-cp_mean*cp_mean;;
-	//printf("%s\n",fname);
-	//printf("<cp>=%lf, ",cp_mean);
-	//printf("var{cp}=%lf, ",cp_var);
-	//printf("std{cp}=%lf\n",sqrt(cp_var));
+	printf("%s\n",fname);
+	printf("<cp>=%lf, ",cp_mean);
+	printf("var{cp}=%lf, ",cp_var);
+	printf("std{cp}=%lf\n",sqrt(cp_var));
 	return(cp2);
 };
 void cp_list::read_all(){

@@ -39,6 +39,6 @@ if __name__=="__main__":
     mp.show(ax)
 
     fig.savefig("grain.png",bbox_inches="tight")
-    plt.show()
+    #plt.show()
 
 

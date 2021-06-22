@@ -99,8 +99,8 @@ if __name__=="__main__":
     freqs=[1.0]
     ex.grid(True)
 
-    DIR="Gss"
     DIR="DAT"
+    DIR="Gss"
     nums=[1,2,3,4,5,6,7,8,9,10]
     isum=0
     for num in nums:
@@ -117,6 +117,7 @@ if __name__=="__main__":
         #bwv.show(bx)
         #bx.plot(bwv.tmin,bwv.xcod)
         bwv.Win(t1,t2,1.0); 
+        plt.show()
         bwv.FFT(bx="",show=False)
 
         for frq in freqs:

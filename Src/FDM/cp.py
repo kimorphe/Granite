@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
+from mpl_toolkits.axes_grid1.colorbar import colorbar
 
 class cp_data:
 
@@ -36,7 +38,7 @@ class cp_data:
         Xa=self.Xa
         Xb=self.Xb
         ext=[Xa[0],Xb[0],Xa[1],Xb[1]]
-        im=ax.imshow(self.cp,extent=ext,cmap="jet",origin="lower",interpolation="none")
+        im=ax.imshow(self.cp,extent=ext,cmap="jet",origin="lower",interpolation="none",vmin=4,vmax=7)
         return(im);
 
 
@@ -46,7 +48,14 @@ if __name__=="__main__":
 
     fig=plt.figure()
     ax=fig.add_subplot(111)
+    ax_divider=make_axes_locatable(ax)
+    cax=ax_divider.append_axes("right",size="7%",pad="2%");
 
     im=Vel.show_cp(ax)
-    plt.colorbar(im)
+    cb=colorbar(im,cax=cax,orientation="vertical")
+    #plt.colorbar(im)
+    ax.tick_params(labelsize=14)
+    cb.ax.tick_params(labelsize=12)
     plt.show()
+
+    fig.savefig("cp.png",bbox_inches="tight")

@@ -331,3 +331,44 @@ ascan.cppとkw.pyの結果の違いについて
 	DATAフォルダから計算を実行：
 	周波数毎の距離減衰曲線を描く-->Gaussiaと計測した速度分布で異なる挙動になりそう。 	
 
+2021/6/18(Fri)
+	３日程で原稿を書き、どうにか提出.
+2021/6/22/(Tue)
+
+	しばらくしたら忘れてしまうので、プログラム機能をメモ.
+	Granite2020/ --> 計算結果、プログラム
+	Papers/ApplMech2021/ --> 論文原稿
+
+	[DATA FILES & FOLDERS]
+	  1MHznew.csv (参照波形)
+	 /K_Feldspar (波形データ,カリ長石)
+	 /Na_Feldspar(波形データ,ナトリウム長石)
+	 /Quartz(波形データ,石英)
+
+	[DATA & FIGS for PRESENTATION]
+	 /PPT_Figs(5月発表時のPPT使用、元データ)
+
+	[Python Programs]
+	 /Pycodes(python program: 他のフォルダにもあり)
+	  Slowness/phase velocityの計算(単結晶) 
+	
+	[SOURCE CODES]
+	/Src(主としてc/c++コード、いくつかのpython code)
+	 ascan, bscan, tmax, mean_awv, win_test
+	/Src/FDM
+	 FDM code
+	/Src/Model
+	 core_top_face.png --> 供試体画像(img2.pyに読み込み,K,Na,Q,Btへの塗り分け)
+	 clst.cpp --> clusteringによる多結晶体モデルの作成
+
+	FDM計算の実行(論文データはLinux Laptopで計算)
+	　/Src/FDM/DATA*/ ../fdm argv[1] (argv[1]引数の数字は乱数のseed)
+	  /Src/Model/  clst  argv[1] (argv[1]で乱数のseedを設定) --> grain*.out (shell scriptで10個生成)
+
+	Concerns: 
+	 slowness計算に誤りがないか
+	 modelを10ケースよりも増やすと、散乱減衰の挙動にGaussian perturbationと差が無くなるのではないか?
+	 grainのサイズを変えるとどうなるのか？
+		
+
+
